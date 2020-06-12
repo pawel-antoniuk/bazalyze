@@ -1,0 +1,12 @@
+<div *ngFor="let collectionName of collectionNames">
+  <mat-card class="table-list-card">
+    <mat-card-header>
+      <mat-card-title>
+        {{collectionName}}
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <app-data-table [collectionName]="collectionName"></app-data-table>
+    </mat-card-content>
+  </mat-card>
+</div>
