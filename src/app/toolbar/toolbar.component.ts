@@ -5,6 +5,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { DashboardService } from '../dashboard.service';
 import { DataTableComponent } from '../data-table/data-table.component';
 import { ScatterPlotComponent } from '../scatter-plot/scatter-plot.component';
+import { HistogramComponent } from '../histogram/histogram.component';
+import { StatisticsComponent } from '../statistics/statistics.component';
 
 @Component({
   selector: 'app-toolbar',
@@ -46,8 +48,16 @@ export class ToolbarComponent implements OnInit {
     });
   }
 
-  openScatterPlot(event) {
+  openScatterPlot() {
     this.dashboardService.addComponent('Scatter plot', ScatterPlotComponent, () => { });
+  }
+
+  openHistogram() {
+    this.dashboardService.addComponent('Histogram', HistogramComponent, () => { });
+  }
+
+  openStatistics() {
+    this.dashboardService.addComponent('Statistics', StatisticsComponent, () => { });
   }
 
 }

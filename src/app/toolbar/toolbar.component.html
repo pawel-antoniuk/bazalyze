@@ -1,7 +1,10 @@
 
 <mat-toolbar color="primary" class="app-navbar">
   <mat-toolbar-row>
-    <span>Bazalyze</span>
+    <span class="toolbar-title-header">
+      <mat-icon> scatter_plot</mat-icon>
+      Bazalyze
+    </span>
 
     <button mat-icon-button [matMenuTriggerFor]="appInfo">
       <mat-icon>more_vert</mat-icon>
@@ -39,7 +42,8 @@
 </mat-menu>
 
 <mat-menu #fileMenu="matMenu">
-  <button mat-menu-item (click)="fileInput.click()">Load</button>
+  <button mat-menu-item (click)="fileInput.click()">Load from disk</button>
+  <button mat-menu-item (click)="fileInput.click()">Load sample</button>
 </mat-menu>
 
 <mat-menu #changesMenu="matMenu">
@@ -55,12 +59,12 @@
 </mat-menu>
 
 <mat-menu #statisticsMenu="matMenu">
-  <button mat-menu-item>Basic statistics</button>
+  <button mat-menu-item (click)="openStatistics()">Basic statistics</button>
 </mat-menu>
 
 <mat-menu #analyzeMenu="matMenu">
-  <button mat-menu-item>Histogram</button>
-  <button mat-menu-item (click)="openScatterPlot($event)">Scatter plot</button>
+  <button mat-menu-item (click)="openHistogram()">Histogram</button>
+  <button mat-menu-item (click)="openScatterPlot()">Scatter plot</button>
 </mat-menu>
 
 <input hidden (change)="onFileSelected()" #fileInput type="file" id="file">
