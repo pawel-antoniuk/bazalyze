@@ -9,7 +9,7 @@ let db: loki = new loki('db.json');
 })
 export class DataService {
 
-  private columnNames: {[id: string]: string[]} = {};
+  private columnNames: { [id: string]: string[] } = {};
 
   constructor(private papa: Papa) { }
 
@@ -19,12 +19,18 @@ export class DataService {
 
     let parseResult: ParseResult;
 
+    const previousCollection = db.getCollection(file.name);
+    if(previousCollection != null) {
+      db.removeCollection(file.name);
+    }
+
     let save = (indicies: string[], complete: (collectionName: string) => void) => {
       let collection: Collection = db.addCollection(file.name, {
         indices: indicies
       });
+
       collection.insert(parseResult.data);
-      db.saveDatabase();
+      parseResult = null;
 
       complete(collection.name);
     };
@@ -35,7 +41,10 @@ export class DataService {
         this.columnNames[file.name] = result.meta.fields;
         selector(result.meta.fields, save);
       },
+      transformHeader: (header) => header === '' ? 'ID' : header,
       header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true
     });
   }
 
@@ -45,7 +54,7 @@ export class DataService {
 
   public getCollectionEntries(collectionName: string, limit: number) {
     let q = db.getCollection(collectionName).chain().find();
-    if(limit > 0) {
+    if (limit > 0) {
       return q.limit(limit).data();
     } else {
       return q.data();
@@ -54,5 +63,13 @@ export class DataService {
 
   public getCollectionColumns(collectionName: string) {
     return this.columnNames[collectionName];
+  }
+
+  public getCollectionIndices(collectionName: string) {
+    return Object.keys(db.getCollection(collectionName).binaryIndices);
+  }
+
+  public getCollection(collectionName: string) {
+    return db.getCollection(collectionName);
   }
 }
