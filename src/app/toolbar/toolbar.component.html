@@ -1,0 +1,66 @@
+
+<mat-toolbar color="primary" class="app-navbar">
+  <mat-toolbar-row>
+    <span>Bazalyze</span>
+
+    <button mat-icon-button [matMenuTriggerFor]="appInfo">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+
+    <button mat-button [matMenuTriggerFor]="fileMenu">
+      File
+    </button>
+
+    <button mat-button [matMenuTriggerFor]="changesMenu">
+      Changes
+    </button>
+
+    <button mat-button [matMenuTriggerFor]="transformMenu">
+      Transform
+    </button>
+
+    <button mat-button [matMenuTriggerFor]="statisticsMenu">
+      Statistics
+    </button>
+
+    <button mat-button [matMenuTriggerFor]="analyzeMenu">
+      Analyze
+    </button>
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<mat-toolbar>
+  <mat-toolbar-row>
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<mat-menu #appInfo="matMenu">
+  <button mat-menu-item>Info</button>
+</mat-menu>
+
+<mat-menu #fileMenu="matMenu">
+  <button mat-menu-item (click)="fileInput.click()">Load</button>
+</mat-menu>
+
+<mat-menu #changesMenu="matMenu">
+  <button mat-menu-item>Apply</button>
+  <button mat-menu-item>Undo</button>
+</mat-menu>
+
+<mat-menu #transformMenu="matMenu">
+  <button mat-menu-item>Rename headers</button>
+  <button mat-menu-item>Join</button>
+  <button mat-menu-item>Fill</button>
+  <button mat-menu-item>Group by</button>
+</mat-menu>
+
+<mat-menu #statisticsMenu="matMenu">
+  <button mat-menu-item>Basic statistics</button>
+</mat-menu>
+
+<mat-menu #analyzeMenu="matMenu">
+  <button mat-menu-item>Histogram</button>
+  <button mat-menu-item (click)="openScatterPlot($event)">Scatter plot</button>
+</mat-menu>
+
+<input hidden (change)="onFileSelected()" #fileInput type="file" id="file">
