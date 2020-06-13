@@ -32,6 +32,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { DashboardItemComponent } from './dashboard-item/dashboard-item.component';
 import { MatInputModule } from '@angular/material/input';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import { HistogramComponent } from './histogram/histogram.component';
+import { StatisticsComponent } from './statistics/statistics.component';
 
 PlotlyViaCDNModule.plotlyVersion = '1.54.2';
 PlotlyViaCDNModule.plotlyBundle = null;
@@ -45,7 +47,9 @@ PlotlyViaCDNModule.plotlyBundle = null;
     ToolbarComponent,
     ScatterPlotComponent,
     DashboardComponent,
-    DashboardItemComponent
+    DashboardItemComponent,
+    HistogramComponent,
+    StatisticsComponent
   ],
   imports: [
     BrowserModule,
