@@ -3,7 +3,12 @@
 }
 
 .mat-cell {
-  padding: 50px 50px 8px 0;
+  // padding: 50px 50px 8px 0;
+  // font-size: 14px;
+  // min-height: 48px;
+  // text-align: center;
+  padding: 5px;
+  border-right: 1px solid #aaa;
 }
 
 .data-table-container {

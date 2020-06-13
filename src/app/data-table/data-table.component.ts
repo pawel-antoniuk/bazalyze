@@ -22,12 +22,14 @@ export class DataTableComponent implements OnInit {
 
   records: any[];
   columns: string[];
+  indices: string[];
   dataSource: MatTableDataSource<any>;
 
   constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
     this.columns = this.dataService.getCollectionColumns(this.collectionName);
+    this.indices = this.dataService.getCollectionIndices(this.collectionName);
     const data = this.dataService.getCollectionEntries(this.collectionName, -1);
     this.dataSource = new MatTableDataSource<any>(data);
     this.dataSource.paginator = this.paginator;
