@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ParticlesConfig } from './config/ParticlesConfig';
-
-declare var particlesJS: any;
+import { tsParticles } from "tsparticles";
 
 @Component({
   selector: 'app-background',
@@ -13,7 +12,7 @@ export class BackgroundComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    particlesJS('particles-js', ParticlesConfig);
+    tsParticles.load('particles-js', ParticlesConfig as any);
   }
 
 }

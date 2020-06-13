@@ -49,7 +49,7 @@ export const ParticlesConfig = {
     },
     "move": {
       "enable": true,
-      "speed": 1.0,
+      "speed": 0.2,
       "direction": "none",
       "random": false,
       "straight": false,
@@ -101,5 +101,6 @@ export const ParticlesConfig = {
       }
     }
   },
-  "retina_detect": true
+  "retina_detect": true,
+  "fpsLimit": 5
 }
