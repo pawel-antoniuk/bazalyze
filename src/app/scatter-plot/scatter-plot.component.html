@@ -1,0 +1,51 @@
+<div>
+  <mat-form-field appearance="fill">
+    <mat-label>Dataset</mat-label>
+    <mat-select [(ngModel)]="collectionName" (selectionChange)="onDatasetSelectionChange()">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of collectionNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Variable X</mat-label>
+    <mat-select [(ngModel)]="xVariableName" (selectionChange)="reloadData()">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of variableNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+
+  <mat-form-field appearance="fill">
+    <mat-label>Variable Y</mat-label>
+    <mat-select [(ngModel)]="yVariableName" (selectionChange)="reloadData()">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of variableNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Variable Z</mat-label>
+    <mat-select [(ngModel)]="zVariableName" (selectionChange)="reloadData()">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of variableNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" >
+    <mat-label>Limit</mat-label>
+    <input matInput type="number" [(ngModel)]="limit" (input)="reloadData()">
+  </mat-form-field>
+</div>
+
+<plotly-plot [layout]="graph.layout"></plotly-plot>
+
+<mat-checkbox [(ngModel)]="keepAspectRation" (change)="reloadData()">Keep aspect ratio</mat-checkbox>
