@@ -1,0 +1,14 @@
+<mat-card>
+  <mat-card-title>
+    <p class="dashboard-title-header">
+      {{title}}
+      <span class="fill-remaining-space"></span>
+      <button mat-icon-button (click)="onClose()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </p>
+  </mat-card-title>
+  <mat-card-content>
+    <template #container></template>
+  </mat-card-content>
+</mat-card>
