@@ -26,12 +26,7 @@ export class ScatterPlotComponent implements OnInit {
   public graph = {
     layout: {
       width: 800, height: 600,
-      margin: {
-        l: 40,
-        r: 10,
-        t: 10,
-        b: 40
-      }
+      margin: { l: 40, r: 10, t: 10, b: 40 }
     }
   };
 
