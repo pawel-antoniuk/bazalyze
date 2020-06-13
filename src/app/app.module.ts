@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -18,10 +19,22 @@ import { SelectIndexComponent } from './select-index/select-index.component';
 import { DataTableComponent } from './data-table/data-table.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
-import { DataTableListComponent } from './data-table-list/data-table-list.component';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
+import { ToolbarComponent } from './toolbar/toolbar.component';
+import { PlotlyViaCDNModule } from 'angular-plotly.js';
+import { OverlayModule } from '@angular/cdk/overlay';
+import { ScatterPlotComponent } from './scatter-plot/scatter-plot.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardItemComponent } from './dashboard-item/dashboard-item.component';
+import { MatInputModule } from '@angular/material/input';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+
+PlotlyViaCDNModule.plotlyVersion = '1.54.2';
+PlotlyViaCDNModule.plotlyBundle = null;
 
 @NgModule({
   declarations: [
@@ -29,7 +42,10 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
     BackgroundComponent,
     SelectIndexComponent,
     DataTableComponent,
-    DataTableListComponent
+    ToolbarComponent,
+    ScatterPlotComponent,
+    DashboardComponent,
+    DashboardItemComponent
   ],
   imports: [
     BrowserModule,
@@ -49,7 +65,14 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
     MatTableModule,
     MatGridListModule,
     MatPaginatorModule,
-    MatSortModule
+    MatSortModule,
+    CommonModule,
+    PlotlyViaCDNModule,
+    OverlayModule,
+    DragDropModule,
+    FlexLayoutModule,
+    MatInputModule,
+    MatCheckboxModule
   ],
   providers: [],
   bootstrap: [AppComponent]

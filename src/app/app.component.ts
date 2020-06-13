@@ -1,7 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { DataService } from './data.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SelectIndexComponent } from './select-index/select-index.component';
+import { Overlay, RepositionScrollStrategy, GlobalPositionStrategy, ConnectedPositionStrategy } from '@angular/cdk/overlay';
+import { ComponentPortal } from '@angular/cdk/portal';
+import { ScatterPlotComponent } from './scatter-plot/scatter-plot.component';
 
 @Component({
   selector: 'app-root',
@@ -11,27 +14,18 @@ import { SelectIndexComponent } from './select-index/select-index.component';
 export class AppComponent {
   title = 'bazalyze';
 
+  @ViewChild('button', { static: true }) private buttonRef: ElementRef<HTMLButtonElement>;
+
   collectionNames: string[];
 
-  constructor(private data: DataService, private dialog: MatDialog) {
+  constructor(private overlay: Overlay) {
   }
 
-  onFileSelected() {
-    const inputNode: any = document.querySelector('#file');
-    const file = inputNode.files[0];
+  ngOnInit() {
 
-    this.data.loadData(file, (headers, save) => {
+  }
 
-      const dialogRef = this.dialog.open(SelectIndexComponent, {
-        width: '250px',
-        data: { headers: headers }
-      });
-
-      dialogRef.afterClosed().subscribe(result => {
-        save(result, () => {
-          this.collectionNames = this.data.getCollectionNames();
-        });
-      });
-    });
+  onCollectionLoaded(collectionNames: string[]) {
+    this.collectionNames = collectionNames;
   }
 }

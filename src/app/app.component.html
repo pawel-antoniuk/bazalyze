@@ -1,48 +1,5 @@
-<mat-toolbar color="primary">
-  <mat-toolbar-row>
-    <span>Bazalyze</span>
-
-    <button mat-icon-button [matMenuTriggerFor]="appInfo">
-      <mat-icon>more_vert</mat-icon>
-    </button>
-
-    <button mat-button [matMenuTriggerFor]="fileMenu">
-      File
-    </button>
-
-    <button mat-button [matMenuTriggerFor]="statiscitsMenu">
-      Statiscis
-    </button>
-
-    <button mat-button [matMenuTriggerFor]="analyzeMenu">
-      Analyze
-    </button>
-  </mat-toolbar-row>
-</mat-toolbar>
-
-<mat-menu #appInfo="matMenu">
-  <button mat-menu-item>Info</button>
-</mat-menu>
-
-<mat-menu #fileMenu="matMenu">
-  <button mat-menu-item (click)="fileInput.click()">Load</button>
-  <button mat-menu-item>Help</button>
-</mat-menu>
-
-<mat-menu #statiscitsMenu="matMenu">
-  <button mat-menu-item>Load</button>
-  <button mat-menu-item>Help</button>
-</mat-menu>
-
-<mat-menu #analyzeMenu="matMenu">
-  <button mat-menu-item>Load</button>
-  <button mat-menu-item>Help</button>
-</mat-menu>
-
-<input hidden (change)="onFileSelected()" #fileInput type="file" id="file">
-
+<app-toolbar (collectionNamesLoaded)="onCollectionLoaded($event)"></app-toolbar>
 <app-background></app-background>
-
-<app-data-table-list [collectionNames]="collectionNames"></app-data-table-list>
-
+<app-dashboard></app-dashboard>
+<!-- <app-data-table-list [collectionNames]="collectionNames"></app-data-table-list> -->
 <router-outlet></router-outlet>
