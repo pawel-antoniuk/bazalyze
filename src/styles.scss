@@ -1,10 +1,42 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
 #particles-js {
   height: 100%;
   width: 100%;
   position: fixed;
+}
+
+.dashboard-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.dashboard-container > * {
+  // flex: 1 1 auto;
+  // text-align: center;
+  padding: 20px;
+}
+
+.fill-remaining-space {
+  flex: 1 1 auto;
+}
+
+.dashboard-title-header {
+  display: inline-flex;
+  line-height: 40px;
+  width: 100%;
+}
+
+mat-form-field {
+  width: 170px;
 }
