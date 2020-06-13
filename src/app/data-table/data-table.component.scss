@@ -14,4 +14,6 @@
 .data-table-container {
   overflow: auto;
   max-height: 800px;
+  display: flex;
+  justify-content: center;
 }
