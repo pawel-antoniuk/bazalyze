@@ -1,0 +1,32 @@
+<div class="statistics-buttons-container">
+  <mat-form-field appearance="fill">
+    <mat-label>Dataset</mat-label>
+    <mat-select [(ngModel)]="collectionName" (selectionChange)="onDatasetSelectionChange()">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of collectionNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Variable X</mat-label>
+    <mat-select [(ngModel)]="variableName" (selectionChange)="onVariableSelectionChange()">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of variableNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<mat-grid-list cols="8" class="statistics-table">
+  <span *ngFor="let statisticsValue of statisticsValues">
+    <mat-grid-tile>
+      <p><b>{{ statisticsValue.name }}: </b></p>
+    </mat-grid-tile>
+    <mat-grid-tile>
+      <p>{{ statisticsValue.value }}</p>
+    </mat-grid-tile>
+  </span>
+</mat-grid-list>
