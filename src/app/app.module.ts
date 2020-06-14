@@ -35,6 +35,10 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import { HistogramComponent } from './histogram/histogram.component';
 import { StatisticsComponent } from './statistics/statistics.component';
 import { SplitByComponent } from './split-by/split-by.component';
+import { UpdateComponent } from './update/update.component';
+import { AlertComponent } from './alert/alert.component';
+import { RenameColumnsComponent } from './rename-columns/rename-columns.component';
+import { JoinComponent } from './join/join.component';
 
 PlotlyViaCDNModule.plotlyVersion = '1.54.2';
 PlotlyViaCDNModule.plotlyBundle = null;
@@ -51,7 +55,11 @@ PlotlyViaCDNModule.plotlyBundle = null;
     DashboardItemComponent,
     HistogramComponent,
     StatisticsComponent,
-    SplitByComponent
+    SplitByComponent,
+    UpdateComponent,
+    AlertComponent,
+    RenameColumnsComponent,
+    JoinComponent
   ],
   imports: [
     BrowserModule,

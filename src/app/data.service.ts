@@ -11,12 +11,12 @@ export class DataService {
 
   private collections: {
     [id: string]: {
-      selectedView: string,
       onUpdateCallback: (() => void)[],
       views: {
         viewName: string,
         columnNames: string[],
-      }[]
+      }[],
+      handles: number
     }
   } = {};
 
@@ -43,12 +43,12 @@ export class DataService {
       collection.insert(parseResult.data);
 
       this.collections[file.name] = {
-        selectedView: file.name,
         onUpdateCallback: [],
         views: [{
           viewName: file.name,
           columnNames: parseResult.meta.fields
-        }]
+        }],
+        handles: 1
       };
 
       parseResult = null;
@@ -86,9 +86,9 @@ export class DataService {
   }
 
   public getViewNameCollection(viewName: string) {
-    for(let [collectionName, collectionValue] of Object.entries(this.collections)) {
+    for (let [collectionName, collectionValue] of Object.entries(this.collections)) {
       let foundView = collectionValue.views.find(v => v.viewName == viewName);
-      if(foundView) {
+      if (foundView) {
         return collectionName;
       }
     }
@@ -128,14 +128,6 @@ export class DataService {
     this.collections[collectionName].onUpdateCallback.push(callback);
   }
 
-  public getCollectionSelectedViewName(collectionName: string) {
-    return this.collections[collectionName].selectedView;
-  }
-
-  public selecetCollectionView(collectionName: string, viewName: string) {
-    this.collections[collectionName].selectedView = viewName;
-  }
-
   public addCollectionView(collectionName: string, viewName: string,
     columnNames: string[], indicies: string[], data: any[]) {
 
@@ -150,12 +142,27 @@ export class DataService {
     });
   }
 
-  public removeCllection(collectionName: string) {
-    db.removeCollection(collectionName);
-    delete this.collections[collectionName];
+  public addCollectionHandle(collectionName: string) {
+    this.collections[collectionName].handles += 1;
+  }
+
+  public removeCollectionHandle(collectionName: string) {
+    this.collections[collectionName].handles -= 1;
+
+    if (this.collections[collectionName].handles <= 0) {
+      db.removeCollection(collectionName);
+      delete this.collections[collectionName];
+    }
   }
 
   public collectionUpdated(collectionName: string) {
     this.collections[collectionName].onUpdateCallback.forEach(c => c());
+  }
+
+  public updateViewColumnNames(viewName: string) {
+    const newColumnNames = Object.keys(this.getView(viewName).findOne());
+    let oldColumnNames = this.getViewColumns(viewName);
+    const filtredColumnNames = newColumnNames.filter(n => !['meta', '$loki'].includes(n));
+    oldColumnNames.splice(0, oldColumnNames.length, ...filtredColumnNames);
   }
 }

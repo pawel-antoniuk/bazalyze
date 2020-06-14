@@ -52,11 +52,12 @@
 </mat-menu>
 
 <mat-menu #transformMenu="matMenu">
-  <button mat-menu-item>Rename headers</button>
+  <button mat-menu-item (click)="openSplitBy()">Split by</button>
+  <button mat-menu-item (click)="openUpdate()">Update</button>
+  <button mat-menu-item (click)="openRenameColumns()">Rename columns</button>
   <button mat-menu-item>Join</button>
   <button mat-menu-item>Fill</button>
   <button mat-menu-item>Group by</button>
-  <button mat-menu-item (click)="openSplitBy()">Split by</button>
 </mat-menu>
 
 <mat-menu #statisticsMenu="matMenu">
@@ -68,4 +69,4 @@
   <button mat-menu-item (click)="openScatterPlot()">Scatter plot</button>
 </mat-menu>
 
-<input hidden (change)="onFileSelected()" #fileInput type="file" id="file">
+<input hidden (change)="onFileSelected()" #fileInput type="file" id="file" [accept]="'.csv'">

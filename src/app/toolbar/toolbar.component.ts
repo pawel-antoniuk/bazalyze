@@ -8,6 +8,8 @@ import { ScatterPlotComponent } from '../scatter-plot/scatter-plot.component';
 import { HistogramComponent } from '../histogram/histogram.component';
 import { StatisticsComponent } from '../statistics/statistics.component';
 import { SplitByComponent } from '../split-by/split-by.component';
+import { UpdateComponent } from '../update/update.component';
+import { RenameColumnsComponent } from '../rename-columns/rename-columns.component';
 
 @Component({
   selector: 'app-toolbar',
@@ -63,6 +65,14 @@ export class ToolbarComponent implements OnInit {
 
   openSplitBy() {
     this.dialog.open(SplitByComponent);
+  }
+
+  openUpdate() {
+    this.dialog.open(UpdateComponent);
+  }
+
+  openRenameColumns() {
+    this.dialog.open(RenameColumnsComponent);
   }
 
 }
