@@ -7,6 +7,7 @@ import { DataTableComponent } from '../data-table/data-table.component';
 import { ScatterPlotComponent } from '../scatter-plot/scatter-plot.component';
 import { HistogramComponent } from '../histogram/histogram.component';
 import { StatisticsComponent } from '../statistics/statistics.component';
+import { SplitByComponent } from '../split-by/split-by.component';
 
 @Component({
   selector: 'app-toolbar',
@@ -58,6 +59,10 @@ export class ToolbarComponent implements OnInit {
 
   openStatistics() {
     this.dashboardService.addComponent('Statistics', StatisticsComponent, () => { });
+  }
+
+  openSplitBy() {
+    this.dialog.open(SplitByComponent);
   }
 
 }
