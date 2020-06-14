@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { DataService } from '../data.service';
 import { MatOptionSelectionChange } from '@angular/material/core';
 import { PlotlyModule, PlotComponent } from 'angular-plotly.js';
+import { DashboardService } from '../dashboard.service';
 
 @Component({
   selector: 'app-scatter-plot',
@@ -30,10 +31,10 @@ export class ScatterPlotComponent implements OnInit {
     }
   };
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
-    this.collectionNames = this.dataService.getCollectionNames();
+    this.collectionNames = this.dataService.getViewNames();
   }
 
 
@@ -47,18 +48,18 @@ export class ScatterPlotComponent implements OnInit {
 
     let data = { type: 'scatter', mode: 'markers' }
 
-    data["x"] = this.dataService.getCollectionDefaultView(this.collectionName).chain()
+    data["x"] = this.dataService.getView(this.collectionName).chain()
       .find()
       .limit(this.limit)
       .mapReduce(o => o[this.xVariableName], a => a);
 
-    data["y"] = this.dataService.getCollectionDefaultView(this.collectionName).chain()
+    data["y"] = this.dataService.getView(this.collectionName).chain()
       .find()
       .limit(this.limit)
       .mapReduce(o => o[this.yVariableName], a => a);
 
     if (this.zVariableName) {
-      data["z"] = this.dataService.getCollectionDefaultView(this.collectionName).chain()
+      data["z"] = this.dataService.getView(this.collectionName).chain()
         .find()
         .limit(this.limit)
         .mapReduce(o => o[this.zVariableName], a => a);
@@ -70,6 +71,7 @@ export class ScatterPlotComponent implements OnInit {
 
     this.plotly.data = [data];
     this.configureLayout();
+    this.dashboardService.setSuheader(this, `${this.collectionName}`);
   }
 
   configureLayout() {
@@ -90,7 +92,7 @@ export class ScatterPlotComponent implements OnInit {
   }
 
   onDatasetSelectionChange() {
-    this.variableNames = this.dataService.getCollectionDefaultViewColumns(this.collectionName);
+    this.variableNames = this.dataService.getViewColumns(this.collectionName);
     this.xVariableName = '';
     this.yVariableName = '';
     this.zVariableName = '';

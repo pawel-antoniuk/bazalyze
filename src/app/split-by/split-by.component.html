@@ -3,9 +3,9 @@
 <div mat-dialog-content>
   <mat-form-field appearance="fill">
     <mat-label>Dataset</mat-label>
-    <mat-select [(ngModel)]="collectionName" (selectionChange)="onDatasetSelectionChange()">
+    <mat-select [(ngModel)]="viewName" (selectionChange)="onDatasetSelectionChange()">
       <mat-option>(Clear)</mat-option>
-      <mat-option *ngFor="let name of collectionNames" [value]="name">
+      <mat-option *ngFor="let name of viewNames" [value]="name">
         {{name}}
       </mat-option>
     </mat-select>

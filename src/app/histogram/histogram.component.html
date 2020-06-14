@@ -1,32 +1,36 @@
 <div class="histogram-button-container">
-  <mat-form-field appearance="fill">
-    <mat-label>Dataset</mat-label>
-    <mat-select [(ngModel)]="collectionName" (selectionChange)="onDatasetSelectionChange()">
-      <mat-option>(Clear)</mat-option>
-      <mat-option *ngFor="let name of collectionNames" [value]="name">
-        {{name}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
 
+  <span *ngFor="let selectedVariable of selectedVariables; index as i">
+
+    <mat-form-field class="dataset-min-selection" appearance="fill">
+      <mat-label>Dataset</mat-label>
+      <mat-select (selectionChange)="onDatasetSelectionChange(i, $event)"
+        [ngModel]="selectedVariable.dataset">
+        <mat-option>(Clear)</mat-option>
+        <mat-option *ngFor="let name of collectionNames" [value]="name">
+          {{name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Variable X</mat-label>
+      <mat-select (selectionChange)="onVariableSelectionChange(i, $event)"
+        [ngModel]="selectedVariable.selectedVariableName">
+        <mat-option>(Clear)</mat-option>
+        <mat-option *ngFor="let name of selectedVariable.variableNames" [value]="name">
+          {{name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+  </span>
 
   <mat-form-field appearance="fill">
     <mat-label>Bin size</mat-label>
     <input matInput type="number" [(ngModel)]="binSize" (input)="onChangeBinSize()">
   </mat-form-field>
 
-
-  <span *ngFor="let xVariable of xVariables">
-    <mat-form-field appearance="fill">
-      <mat-label>Variable X</mat-label>
-      <mat-select (selectionChange)="onVariableSelectionChange(xVariable.name, $event)" [ngModel]="xVariable.name">
-        <mat-option>(Clear)</mat-option>
-        <mat-option *ngFor="let name of variableNames" [value]="name">
-          {{name}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-  </span>
 </div>
 
 

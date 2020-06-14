@@ -37,20 +37,23 @@ export class DataTableComponent implements OnInit, OnDestroy {
   }
 
   onDataUpdate() {
-    this.columns = this.dataService.getCollectionDefaultViewColumns(this.collectionName);
-    this.indices = this.dataService.getCollectionDefaultViewIndices(this.collectionName);
-    const data = this.dataService.getCollectionEntries(this.collectionName, -1);
+    this.selectedColectionViewName = this.dataService.getCollectionSelectedViewName(this.collectionName);
+
+    this.columns = this.dataService.getViewColumns(this.selectedColectionViewName);
+    this.indices = this.dataService.getViewIndices(this.selectedColectionViewName);
+    const data = this.dataService.getViewEntries(this.selectedColectionViewName, -1);
     this.dataService.onCollectionUpdate(this.collectionName, () => this.onDataUpdate());
 
     this.dataSource = new MatTableDataSource<any>(data);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.collectionViewNames = this.dataService.getCollectionViewNames(this.collectionName);
-    this.selectedColectionViewName = this.dataService.getCollectionDefaultViewName(this.collectionName);
+
   }
 
   onCollectionViewSelected() {
     this.dataService.selecetCollectionView(this.collectionName, this.selectedColectionViewName);
+    this.onDataUpdate();
   }
 
 }

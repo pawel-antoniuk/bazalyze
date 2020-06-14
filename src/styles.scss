@@ -37,8 +37,25 @@ body {
   display: inline-flex;
   line-height: 40px;
   width: 100%;
+  align-items: baseline;
+}
+
+.dashboard-title-subheader {
+  font-size: 75%;
+}
+
+.dataset-selection {
+  width: 400px;
+}
+
+.dataset-min-selection {
+  width: 250px;
 }
 
 mat-form-field {
-  width: 170px;
+  width: 140px;
+}
+
+.mat-select-panel {
+  max-width: 1000px;
 }

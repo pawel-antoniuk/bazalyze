@@ -15,7 +15,6 @@ export class DataService {
       onUpdateCallback: (() => void)[],
       views: {
         viewName: string,
-        collectionName: string,
         columnNames: string[],
       }[]
     }
@@ -44,11 +43,10 @@ export class DataService {
       collection.insert(parseResult.data);
 
       this.collections[file.name] = {
-        selectedView: 'original',
+        selectedView: file.name,
         onUpdateCallback: [],
         views: [{
-          viewName: 'original',
-          collectionName: file.name,
+          viewName: file.name,
           columnNames: parseResult.meta.fields
         }]
       };
@@ -71,11 +69,33 @@ export class DataService {
   }
 
   public getCollectionNames() {
-    return db.collections.map(c => c.name);
+    return Object.keys(this.collections);
   }
 
-  public getCollectionEntries(collectionName: string, limit: number) {
-    let q = db.getCollection(collectionName).chain().find();
+  public getViewNames(): string[] {
+    let viewNames: string[] = [];
+    for (let [_, value] of Object.entries(this.collections)) {
+      viewNames.push(...value.views.map(v => v.viewName));
+    }
+
+    return viewNames;
+  }
+
+  public getCollectionViewNames(collectionName: string) {
+    return this.collections[collectionName].views.map(v => v.viewName);
+  }
+
+  public getViewNameCollection(viewName: string) {
+    for(let [collectionName, collectionValue] of Object.entries(this.collections)) {
+      let foundView = collectionValue.views.find(v => v.viewName == viewName);
+      if(foundView) {
+        return collectionName;
+      }
+    }
+  }
+
+  public getViewEntries(viewName: string, limit: number) {
+    let q = db.getCollection(viewName).chain().find();
     if (limit > 0) {
       return q.limit(limit).data();
     } else {
@@ -83,58 +103,49 @@ export class DataService {
     }
   }
 
-  private getCollectionDefaultViewInfo(collectionName: string) {
-    if (collectionName in this.collections) {
-      return this.collections[collectionName]
-        .views.find(v => v.viewName == this.collections[collectionName].selectedView);
-    } else {
-      return null;
+  public getViewColumns(viewName: string) {
+    for (let collection of Object.values(this.collections)) {
+      const view = collection.views.find(v => v.viewName == viewName);
+      if (view) {
+        return view.columnNames;
+      }
     }
   }
 
-  public getCollectionDefaultViewColumns(collectionName: string) {
-    return this.getCollectionDefaultViewInfo(collectionName)?.columnNames;
+  public getViewIndices(viewName: string) {
+    return Object.keys(db.getCollection(viewName).binaryIndices);
   }
 
-  public getCollectionDefaultViewIndices(collectionName: string) {
-    const defaultViewCollectionName = this.getCollectionDefaultViewInfo(collectionName).collectionName;
-    return Object.keys(db.getCollection(defaultViewCollectionName).binaryIndices);
+  public getView(viewName: string) {
+    return db.getCollection(viewName);
   }
 
-  public getCollectionDefaultView(collectionName: string) {
-    const defaultViewCollectionName = this.getCollectionDefaultViewInfo(collectionName).collectionName;
-    return db.getCollection(defaultViewCollectionName);
-  }
-
-  public getCollectionViewNames(collectionName: string) {
-    return this.collections[collectionName].views.map(v => v.viewName);
-  }
+  // public getCollectionViewNames(collectionName: string) {
+  //   return this.collections[collectionName].views.map(v => v.viewName);
+  // }
 
   public onCollectionUpdate(collectionName: string, callback: () => void) {
     this.collections[collectionName].onUpdateCallback.push(callback);
   }
 
-  public getCollectionDefaultViewName(collectionName: string) {
+  public getCollectionSelectedViewName(collectionName: string) {
     return this.collections[collectionName].selectedView;
   }
 
-  public selecetCollectionView(collectionName: string, collectionViewName: string) {
-    this.collections[collectionName].selectedView = collectionViewName;
+  public selecetCollectionView(collectionName: string, viewName: string) {
+    this.collections[collectionName].selectedView = viewName;
   }
 
-  public addCollectionView(collectionName: string, collectionViewName: string,
+  public addCollectionView(collectionName: string, viewName: string,
     columnNames: string[], indicies: string[], data: any[]) {
 
-    const newCollectionName = collectionName + '(' + collectionViewName + ')';
-
-    const newCollection = db.addCollection(newCollectionName, {
+    const newCollection = db.addCollection(viewName, {
       indices: indicies
     });
     newCollection.insert(data);
 
     this.collections[collectionName].views.push({
-      viewName: collectionViewName,
-      collectionName: newCollectionName,
+      viewName: viewName,
       columnNames: columnNames
     });
   }
@@ -142,5 +153,9 @@ export class DataService {
   public removeCllection(collectionName: string) {
     db.removeCollection(collectionName);
     delete this.collections[collectionName];
+  }
+
+  public collectionUpdated(collectionName: string) {
+    this.collections[collectionName].onUpdateCallback.forEach(c => c());
   }
 }

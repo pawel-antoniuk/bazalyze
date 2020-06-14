@@ -11,6 +11,7 @@ export class DashboardItemComponent implements OnInit, AfterViewInit {
   @ViewChild("container", { read: ViewContainerRef }) container: ViewContainerRef;
 
   public title: string
+  public subheader: string;
 
   private component: Type<any>;
   private complete: (component: ComponentRef<any>) => void;

@@ -24,7 +24,7 @@ export class StatisticsComponent implements OnInit {
   constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
-    this.collectionNames = this.dataService.getCollectionNames();
+    this.collectionNames = this.dataService.getViewNames();
   }
 
 
@@ -34,11 +34,11 @@ export class StatisticsComponent implements OnInit {
       return;
     }
 
-    const values = this.dataService.getCollectionDefaultView(this.collectionName).chain()
+    const values = this.dataService.getView(this.collectionName).chain()
       .where(o => o[this.variableName] != null)
       .mapReduce(o => o[this.variableName], a => a);
 
-    const nulls = this.dataService.getCollectionDefaultView(this.collectionName)
+    const nulls = this.dataService.getView(this.collectionName)
       .where(o => o[this.variableName] == null).length;
 
     this.statisticsValues = [];
@@ -65,7 +65,7 @@ export class StatisticsComponent implements OnInit {
   }
 
   onDatasetSelectionChange() {
-    this.variableNames = this.dataService.getCollectionDefaultViewColumns(this.collectionName);
+    this.variableNames = this.dataService.getViewColumns(this.collectionName);
     this.variableName = '';
     this.reloadData();
   }

@@ -3,6 +3,7 @@ import { DataService } from '../data.service';
 import { MatOptionSelectionChange } from '@angular/material/core';
 import { PlotlyModule, PlotComponent } from 'angular-plotly.js';
 import { MatSelectChange } from '@angular/material/select';
+import { DashboardService } from '../dashboard.service';
 
 @Component({
   selector: 'app-histogram',
@@ -15,11 +16,17 @@ export class HistogramComponent implements OnInit {
   plotly: PlotComponent;
 
   collectionNames: string[] = [];
-  variableNames: string[] = [];
 
-  collectionName: string = '';
   binSize = 1;
-  xVariables: [{ name: string}] = [{ name: ''}];
+  selectedVariables: [{
+    dataset: string,
+    selectedVariableName: string,
+    variableNames: string[]
+  }] = [{
+    dataset: '',
+    selectedVariableName: '',
+    variableNames: []
+  }];
 
   public graph = {
     layout: {
@@ -29,45 +36,42 @@ export class HistogramComponent implements OnInit {
     }
   };
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
-    this.collectionNames = this.dataService.getCollectionNames();
+    this.collectionNames = this.dataService.getViewNames();
   }
 
 
   reloadData() {
-    if (!this.collectionName) {
-      return;
-    }
-
     let dataLists = [];
     let usedVariableNames: string[] = [];
 
-    for (let xVariable of this.xVariables) {
-      if (!xVariable.name) {
+    for (let variable of this.selectedVariables) {
+      if (!variable.selectedVariableName
+        || !variable.dataset) {
         continue;
       }
 
       let data = {
-        name: xVariable.name,
+        name: variable.selectedVariableName,
         type: 'histogram',
         xbins: {
           size: this.binSize
         }
       }
 
-      data["x"] = this.dataService.getCollectionDefaultView(this.collectionName).chain()
+      data["x"] = this.dataService.getView(variable.dataset).chain()
         .find()
-        .mapReduce(o => o[xVariable.name], a => a);
+        .mapReduce(o => o[variable.selectedVariableName], a => a);
 
       dataLists.push(data);
-      usedVariableNames.push(xVariable.name);
+      usedVariableNames.push(variable.selectedVariableName);
     }
 
     this.plotly.data = dataLists;
-
     this.configureLayout(usedVariableNames);
+    this.dashboardService.setSuheader(this, `${this.selectedVariables.map(v => v.dataset).join(' + ')}`);
   }
 
   configureLayout(usedVariableNames: string[]) {
@@ -79,15 +83,18 @@ export class HistogramComponent implements OnInit {
     this.plotly.layout = layout;
   }
 
-  onDatasetSelectionChange() {
-    this.variableNames = this.dataService.getCollectionDefaultViewColumns(this.collectionName);
-    this.xVariables = [{ name: ''}];
+  onDatasetSelectionChange(variableIndex: number, event: MatSelectChange) {
+    let variable = this.selectedVariables[variableIndex];
+    variable.dataset = event.value;
+    variable.selectedVariableName = '';
+    variable.variableNames = this.dataService.getViewColumns(variable.dataset);
+
     this.reloadData();
   }
 
-  onVariableSelectionChange(variableKey, event: MatSelectChange) {
-    let variable = this.xVariables.find(v => v.name == variableKey);
-    variable.name = event.value;
+  onVariableSelectionChange(variableIndex: number, event: MatSelectChange) {
+    let variable = this.selectedVariables[variableIndex];
+    variable.selectedVariableName = event.value;
 
     this.reloadData();
   }
@@ -97,6 +104,6 @@ export class HistogramComponent implements OnInit {
   }
 
   addVariable() {
-    this.xVariables.push({ name: '' });
+    this.selectedVariables.push({ dataset: '', selectedVariableName: '', variableNames: [] });
   }
 }

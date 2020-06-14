@@ -1,4 +1,4 @@
-<mat-form-field appearance="fill" *ngIf="collectionViewNames.length > 1">
+<mat-form-field class="dataset-selection" appearance="fill" *ngIf="collectionViewNames.length > 1">
   <mat-label>View</mat-label>
   <mat-select [(ngModel)]="selectedColectionViewName" (selectionChange)="onCollectionViewSelected()">
     <mat-option *ngFor="let name of collectionViewNames" [value]="name">

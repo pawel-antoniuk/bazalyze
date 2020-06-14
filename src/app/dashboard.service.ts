@@ -20,6 +20,10 @@ export class DashboardService {
     this.dashboardComponent.removeComponent(componentInstance);
   }
 
+  public setSuheader(componentInstance: any, subheader: string) {
+    this.dashboardComponent.setSuheader(componentInstance, subheader);
+  }
+
   public registerDashboardComponent(dashboardComponent: DashboardComponent) {
     this.dashboardComponent = dashboardComponent;
   }

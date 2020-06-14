@@ -2,6 +2,9 @@
   <mat-card-title>
     <p class="dashboard-title-header">
       {{title}}
+      <span class="dashboard-title-subheader" *ngIf="subheader">
+      &nbsp;- {{subheader}}
+      </span>
       <span class="fill-remaining-space"></span>
       <button mat-icon-button (click)="onClose()">
         <mat-icon>close</mat-icon>
