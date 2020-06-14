@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { PlotComponent } from 'angular-plotly.js';
 import { DataService } from '../data.service';
 import { MatSelectChange } from '@angular/material/select';
-import { min, max, variance, sampleStandardDeviation, mean, median, mode, quantile } from 'simple-statistics'
+import { min, max, variance, sampleStandardDeviation, mean, mode, quantile, sampleSkewness } from 'simple-statistics'
 
 @Component({
   selector: 'app-statistics',
@@ -20,6 +20,8 @@ export class StatisticsComponent implements OnInit {
   variableName: string = '';
 
   statisticsValues: { name: string, value: string }[] = [];
+
+  variablesCount: number;
 
   constructor(private dataService: DataService) { }
 
@@ -49,7 +51,7 @@ export class StatisticsComponent implements OnInit {
     this.setStatisticsValue('mean', mean(values));
     this.setStatisticsValue('variance', variance(values));
     this.setStatisticsValue('std dev', sampleStandardDeviation(values));
-    this.setStatisticsValue('median', median(values));
+    this.setStatisticsValue('skewness', sampleSkewness(values));
     this.setStatisticsValue('mode', mode(values));
     this.setStatisticsValue('Q1', quantile(values, 0.25));
     this.setStatisticsValue('Q2', quantile(values, 0.5));
@@ -67,6 +69,7 @@ export class StatisticsComponent implements OnInit {
   onDatasetSelectionChange() {
     this.variableNames = this.dataService.getViewColumns(this.collectionName);
     this.variableName = '';
+    this.variablesCount = this.variableNames.length;
     this.reloadData();
   }
 

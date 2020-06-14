@@ -18,6 +18,8 @@
       </mat-option>
     </mat-select>
   </mat-form-field>
+
+  <p *ngIf="collectionName">&nbsp;(Number of variables: {{variablesCount}})</p>
 </div>
 
 <mat-grid-list cols="8" class="statistics-table">
