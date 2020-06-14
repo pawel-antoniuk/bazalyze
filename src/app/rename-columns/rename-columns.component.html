@@ -1,0 +1,33 @@
+<h1 mat-dialog-title>Rename columns</h1>
+
+<div mat-dialog-content>
+  <p>Clear the column name to remove it</p>
+
+  <mat-form-field class="rename-field" appearance="fill">
+    <mat-label>Dataset</mat-label>
+    <mat-select [(ngModel)]="viewName" (selectionChange)="onChangeDataset()">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of viewNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <span *ngFor="let columnName of columnNames; let index = index;trackBy:trackByIndex;">
+    <br>
+    <mat-form-field class="rename-field" appearance="fill">
+      <mat-label>{{originalColumnNames[index]}}</mat-label>
+      <input matInput [(ngModel)]="columnNames[index]">
+    </mat-form-field>
+  </span>
+</div>
+
+
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+  <button mat-button (click)="fileInput.click()" [disabled]="!viewName">Load file (JSON)</button>
+  <button mat-button (click)="onRename()" [disabled]="!viewName">Rename</button>
+</div>
+
+
+<input hidden (change)="onFileSelected()" #fileInput type="file" id="renameFile" [accept]="'.json'">
