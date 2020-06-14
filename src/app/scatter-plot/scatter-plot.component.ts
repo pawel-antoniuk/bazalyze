@@ -47,24 +47,26 @@ export class ScatterPlotComponent implements OnInit {
 
     let data = { type: 'scatter', mode: 'markers' }
 
-    data["x"] = this.dataService.getCollection(this.collectionName).chain()
+    data["x"] = this.dataService.getCollectionDefaultView(this.collectionName).chain()
       .find()
       .limit(this.limit)
       .mapReduce(o => o[this.xVariableName], a => a);
 
-    data["y"] = this.dataService.getCollection(this.collectionName).chain()
+    data["y"] = this.dataService.getCollectionDefaultView(this.collectionName).chain()
       .find()
       .limit(this.limit)
       .mapReduce(o => o[this.yVariableName], a => a);
 
     if (this.zVariableName) {
-      data["z"] = this.dataService.getCollection(this.collectionName).chain()
+      data["z"] = this.dataService.getCollectionDefaultView(this.collectionName).chain()
         .find()
         .limit(this.limit)
         .mapReduce(o => o[this.zVariableName], a => a);
 
       data["type"] = "scatter3d";
     }
+
+    console.log(data);
 
     this.plotly.data = [data];
     this.configureLayout();
@@ -88,7 +90,7 @@ export class ScatterPlotComponent implements OnInit {
   }
 
   onDatasetSelectionChange() {
-    this.variableNames = this.dataService.getCollectionColumns(this.collectionName);
+    this.variableNames = this.dataService.getCollectionDefaultViewColumns(this.collectionName);
     this.xVariableName = '';
     this.yVariableName = '';
     this.zVariableName = '';

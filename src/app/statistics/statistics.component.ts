@@ -34,11 +34,11 @@ export class StatisticsComponent implements OnInit {
       return;
     }
 
-    const values = this.dataService.getCollection(this.collectionName).chain()
+    const values = this.dataService.getCollectionDefaultView(this.collectionName).chain()
       .where(o => o[this.variableName] != null)
       .mapReduce(o => o[this.variableName], a => a);
 
-    const nulls = this.dataService.getCollection(this.collectionName)
+    const nulls = this.dataService.getCollectionDefaultView(this.collectionName)
       .where(o => o[this.variableName] == null).length;
 
     this.statisticsValues = [];
@@ -65,7 +65,7 @@ export class StatisticsComponent implements OnInit {
   }
 
   onDatasetSelectionChange() {
-    this.variableNames = this.dataService.getCollectionColumns(this.collectionName);
+    this.variableNames = this.dataService.getCollectionDefaultViewColumns(this.collectionName);
     this.variableName = '';
     this.reloadData();
   }

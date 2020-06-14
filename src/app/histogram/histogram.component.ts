@@ -57,15 +57,13 @@ export class HistogramComponent implements OnInit {
         }
       }
 
-      data["x"] = this.dataService.getCollection(this.collectionName).chain()
+      data["x"] = this.dataService.getCollectionDefaultView(this.collectionName).chain()
         .find()
         .mapReduce(o => o[xVariable.name], a => a);
 
       dataLists.push(data);
       usedVariableNames.push(xVariable.name);
     }
-
-    console.log(dataLists)
 
     this.plotly.data = dataLists;
 
@@ -82,7 +80,7 @@ export class HistogramComponent implements OnInit {
   }
 
   onDatasetSelectionChange() {
-    this.variableNames = this.dataService.getCollectionColumns(this.collectionName);
+    this.variableNames = this.dataService.getCollectionDefaultViewColumns(this.collectionName);
     this.xVariables = [{ name: ''}];
     this.reloadData();
   }
