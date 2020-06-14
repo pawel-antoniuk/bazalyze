@@ -1,0 +1,30 @@
+<h1 mat-dialog-title>Split by variable</h1>
+
+<div mat-dialog-content>
+  <mat-form-field appearance="fill">
+    <mat-label>Dataset</mat-label>
+    <mat-select [(ngModel)]="collectionName" (selectionChange)="onDatasetSelectionChange()">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of collectionNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <br>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Variable</mat-label>
+    <mat-select [(ngModel)]="variableName">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of variableNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button cdkFocusInitial (click)="onAccept()">Split</button>
+</div>
