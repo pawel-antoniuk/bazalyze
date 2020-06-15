@@ -1,0 +1,27 @@
+.floating-container {
+  position: fixed;
+  margin: 5% auto; /* Will not center vertically and won't work in IE6/7. */
+  left: 0;
+  right: 0;
+  width: 600px;
+
+  text-align: center;
+
+  background-color: rgba($color: #ffffff, $alpha: 0.7)
+}
+
+.front-icon {
+  font-size: 135px;
+  width: auto;
+  color: #3f51b5;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header > * {
+  margin: 10px;
+}
