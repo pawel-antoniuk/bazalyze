@@ -1,0 +1,29 @@
+<h1 mat-dialog-title>Sample datasets</h1>
+
+<div mat-dialog-content>
+
+  <!-- <p>Available sample datasets</p> -->
+
+  <mat-form-field class="dataset-selection" appearance="fill">
+    <mat-label>Dataset</mat-label>
+    <mat-select [(ngModel)]="selectedDataset">
+      <mat-option *ngFor="let name of availableDatasets" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <p>Other resources:</p>
+
+  <div *ngFor="let item of otherResources">
+    <a href="assets/{{item}}" download> <button mat-button>{{item}}</button></a>
+
+  </div>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+  <button mat-button (click)="onLoad()" [disabled]="!selectedDataset">
+    Load
+  </button>
+</div>
