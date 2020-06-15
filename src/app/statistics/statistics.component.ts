@@ -66,6 +66,10 @@ export class StatisticsComponent implements OnInit {
   }
 
   onDatasetSelectionChange() {
+    if(!this.collectionName) {
+      return;
+    }
+
     this.variableNames = this.dataService.getViewColumns(this.collectionName);
     this.variableName = '';
     this.variablesCount = this.variableNames.length;
