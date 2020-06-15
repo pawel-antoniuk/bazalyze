@@ -96,12 +96,6 @@ export class JoinComponent implements OnInit {
     })
 
     const newIndices = leftIndices.concat(rightIndices);
-
-    console.log(rightRenamedColumnNames);
-    console.log(newColumnNames);
-    console.log(newIndices);
-    console.log(newDataset);
-
     this.dataService.addCollection(this.newDatasetName, newIndices, newColumnNames, newDataset);
     this.dashboardService.addComponent(this.newDatasetName, DataTableComponent, ref => {
       ref.instance.collectionName = this.newDatasetName;

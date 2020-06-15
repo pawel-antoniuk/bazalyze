@@ -26,8 +26,6 @@ export class SampleDataComponent implements OnInit {
   }
 
   onLoad() {
-    console.log(this.selectedDataset);
-
     this.dataService.loadDataFromAssets(this.selectedDataset, (headers, save) => {
 
       const dialogRef = this.dialog.open(SelectIndexComponent, {

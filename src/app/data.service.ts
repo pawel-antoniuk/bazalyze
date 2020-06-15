@@ -91,7 +91,6 @@ export class DataService {
     let i: number;
     for (i = 2; ; ++i) {
       previousCollection = db.getCollection(`${datasetName} ${i}`);
-      console.log(i);
       if (previousCollection == null) {
         break;
       }

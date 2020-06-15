@@ -62,8 +62,6 @@ export class CorrelationMatrixComponent implements OnInit {
 
     this.graph.data[0].x = measures;
     this.graph.data[0].y = measures;
-
-    console.log(this.graph.data);
   }
 
   onDatasetSelectionChange() {
