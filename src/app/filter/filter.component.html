@@ -1,0 +1,42 @@
+<h1 mat-dialog-title>Filter</h1>
+
+<div mat-dialog-content>
+
+  <p>Select a dataset</p>
+
+  <mat-form-field class="dataset-selection" appearance="fill">
+    <mat-label>Dataset</mat-label>
+    <mat-select [(ngModel)]="selectedViewName" (selectionChange)="onDatasetSelectionChange()">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of viewNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <p>Select a variable to compare</p>
+
+  <mat-form-field class="dataset-selection" appearance="fill">
+    <mat-label>Variable</mat-label>
+    <mat-select [(ngModel)]="selectedVariableName" (selectionChange)="onVariableSelectionChange()">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of variableNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <p>Compare with</p>
+
+  <mat-form-field class="dataset-selection" appearance="fill">
+    <mat-label>{{selectedVariableName}} =</mat-label>
+    <input matInput [(ngModel)]="selectedConstant">
+  </mat-form-field>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+  <button mat-button (click)="onAccept()" [disabled]="!selectedVariableName || !selectedViewName">
+    Filter
+  </button>
+</div>
