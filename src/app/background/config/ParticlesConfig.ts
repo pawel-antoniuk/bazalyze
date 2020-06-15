@@ -102,5 +102,5 @@ export const ParticlesConfig = {
     }
   },
   "retina_detect": true,
-  "fpsLimit": 10
+  "fpsLimit": 5
 }
