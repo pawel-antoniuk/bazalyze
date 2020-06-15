@@ -56,18 +56,23 @@ export class GroupComponent implements OnInit {
       groups[o[this.selectedVariableName]].push(o);
     });
 
-    let aggregated: any[] = [];
+    let aggregated:  { [id: string]: number | string }[] = [];
 
     for (let [gropValue, groupObjects] of Object.entries(groups)) {
-      let aggregatedValues: { [id: string]: string } = {};
+      let aggregatedValues: { [id: string]: number | string } = {};
       aggregatedValues[this.selectedVariableName] = gropValue;
 
       for (let [variableName, aggregation] of Object.entries(this.selectedAggregations)) {
         aggregation.names.forEach(aggregationName => {
-          const aggregationValue: number = AggregationFunctions[aggregationName](groupObjects
-            .filter(o => o[variableName] != null)
-            .map(o => o[variableName]));
-          aggregatedValues[`${aggregationName}(${variableName})`] = aggregationValue.toFixed(2);
+          const valuesToAggregate = groupObjects.filter(o => o[variableName] != null)
+            .map(o => o[variableName]);
+          let aggregationValue: number;
+          if (valuesToAggregate.length > 0) {
+            aggregationValue = +AggregationFunctions[aggregationName](valuesToAggregate).toFixed(2);
+          } else {
+            aggregationValue = null;
+          }
+          aggregatedValues[`${aggregationName}(${variableName})`] = aggregationValue;
         })
       }
 
@@ -75,7 +80,7 @@ export class GroupComponent implements OnInit {
     }
 
     const collectionName = this.dataService.getViewNameCollection(this.selectedViewName);
-    const viewName = `${collectionName} (by ${this.selectedVariableName})`;
+    const viewName = `${this.selectedViewName} (by ${this.selectedVariableName})`;
     const indices = [...this.dataService.getViewIndices(this.selectedViewName), this.selectedVariableName];
     const newColumnNames = Object.keys(aggregated[0]);
     this.dataService.addCollectionView(collectionName, viewName, newColumnNames, indices, aggregated);
