@@ -79,9 +79,14 @@ mat-form-field {
   justify-content: center;
   align-items: center;
 }
+
 .graph-big-icon-container > mat-icon {
   font-size: 300px;
   width: auto;
   align-items: center;
   height: auto;
+}
+
+.cdk-global-scrollblock {
+  position: initial;
 }

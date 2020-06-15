@@ -1,13 +1,11 @@
 .floating-container {
   position: fixed;
-  margin: 5% auto; /* Will not center vertically and won't work in IE6/7. */
+  margin: 5% auto;
   left: 0;
   right: 0;
-  width: 600px;
-
+  width: 500px;
   text-align: center;
-
-  background-color: rgba($color: #ffffff, $alpha: 0.7)
+  background-color: rgba($color: #ffffff, $alpha: 0.6)
 }
 
 .front-icon {

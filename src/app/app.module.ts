@@ -47,6 +47,7 @@ import { CorrelationMatrixComponent } from './correlation-matrix/correlation-mat
 import { SampleDataComponent } from './sample-data/sample-data.component';
 import { FrontComponent } from './front/front.component';
 import { ShorteningFloatsComponent } from './shortening-floats/shortening-floats.component';
+import { FilterComponent } from './filter/filter.component';
 
 PlotlyViaCDNModule.plotlyVersion = '1.54.2';
 PlotlyViaCDNModule.plotlyBundle = null;
@@ -74,7 +75,8 @@ PlotlyViaCDNModule.plotlyBundle = null;
     CorrelationMatrixComponent,
     SampleDataComponent,
     FrontComponent,
-    ShorteningFloatsComponent
+    ShorteningFloatsComponent,
+    FilterComponent
   ],
   imports: [
     BrowserModule,
