@@ -50,25 +50,57 @@ export class JoinComponent implements OnInit {
   }
 
   onJoin() {
-    const newDataset = this.dataService.getView(this.leftSelectedViewName).eqJoin(
-      this.dataService.getView(this.rightSelectedViewName),
-      this.leftSelectedVariableName, this.rightSelectedVariableName,
-      (left, right) => ({ ...left, ...right }), {
-      removeMeta: true
-    })
-      .data();
-
-    ['$loki', 'meta', this.rightSelectedVariableName].forEach(p => newDataset.forEach(o => delete o[p]));
-
     const leftColumnNames = this.dataService.getViewColumns(this.leftSelectedViewName);
-    const rightColumnNames = this.dataService.getViewColumns(this.rightSelectedViewName);
+    const rightColumnNames = _.clone(this.dataService.getViewColumns(this.rightSelectedViewName));
+    let rightRenamedColumnNames: { [id: string]: string } = {};
+
+    rightColumnNames.forEach((n, index) => {
+      if (leftColumnNames.includes(n)) {
+        rightColumnNames[index] += '*';
+        rightRenamedColumnNames[n] = rightColumnNames[index];
+      } else {
+        rightRenamedColumnNames[n] = n;
+      }
+    })
+
+    // this is a very BAD code. need a lot of optimization.
+    const rightDataset = this.dataService.getView(this.rightSelectedViewName);
+    const newDataset = this.dataService.getView(this.leftSelectedViewName).eqJoin(
+      rightDataset, this.leftSelectedVariableName, this.rightSelectedVariableName,
+      (left, right) => {
+        const copyRight = {};
+        Object.entries(rightRenamedColumnNames).forEach(([prevName, newName]) => {
+          copyRight[newName] = right[prevName];
+        });
+
+        delete copyRight[rightRenamedColumnNames[this.rightSelectedVariableName]];
+
+        return { ...copyRight, ...left };
+      }, {
+      removeMeta: true
+    }).data();
+
+    ['$loki', 'meta'].forEach(p => newDataset.forEach(o => delete o[p]));
+
     const newColumnNames = leftColumnNames
       .concat(rightColumnNames)
-      .filter(c => c != this.rightSelectedVariableName);
+      .filter(c => c != rightRenamedColumnNames[this.rightSelectedVariableName]);
 
     const leftIndices = this.dataService.getViewIndices(this.leftSelectedViewName);
-    const rightIndices = this.dataService.getViewIndices(this.rightSelectedViewName);
+    const rightIndices = _.clone(this.dataService.getViewIndices(this.rightSelectedViewName));
+
+    rightIndices.forEach((ri, i) => {
+      if (ri in rightRenamedColumnNames) {
+        rightIndices[i] = rightRenamedColumnNames[ri];
+      }
+    })
+
     const newIndices = leftIndices.concat(rightIndices);
+
+    console.log(rightRenamedColumnNames);
+    console.log(newColumnNames);
+    console.log(newIndices);
+    console.log(newDataset);
 
     this.dataService.addCollection(this.newDatasetName, newIndices, newColumnNames, newDataset);
     this.dashboardService.addComponent(this.newDatasetName, DataTableComponent, ref => {
