@@ -52,9 +52,10 @@
 </mat-menu> -->
 
 <mat-menu #transformMenu="matMenu">
+  <button mat-menu-item (click)="openFilter()">Filter</button>
   <button mat-menu-item (click)="openSplitBy()">Split by variable</button>
   <button mat-menu-item (click)="openJoin()">Join datasets</button>
-  <button mat-menu-item (click)="openGroup()"> Group by variable</button>
+  <button mat-menu-item (click)="openGroup()">Group by variable</button>
 
   <mat-divider></mat-divider>
 

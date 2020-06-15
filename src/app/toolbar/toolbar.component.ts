@@ -17,6 +17,7 @@ import { GroupComponent } from '../group/group.component';
 import { CorrelationMatrixComponent } from '../correlation-matrix/correlation-matrix.component';
 import { SampleDataComponent } from '../sample-data/sample-data.component';
 import { ShorteningFloatsComponent } from '../shortening-floats/shortening-floats.component';
+import { FilterComponent } from '../filter/filter.component';
 
 @Component({
   selector: 'app-toolbar',
@@ -75,6 +76,10 @@ export class ToolbarComponent implements OnInit {
 
   openSampleData() {
     this.dialog.open(SampleDataComponent);
+  }
+
+  openFilter() {
+    this.dialog.open(FilterComponent);
   }
 
   openSplitBy() {
