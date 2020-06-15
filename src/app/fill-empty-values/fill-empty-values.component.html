@@ -1,0 +1,52 @@
+<h1 mat-dialog-title>Fill empty values</h1>
+
+<div mat-dialog-content>
+  <mat-form-field class="dataset-selection" appearance="fill">
+    <mat-label>Dataset</mat-label>
+    <mat-select [(ngModel)]="selectedViewName" (selectionChange)="onDatasetSelectionChange()">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of viewNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <p>Select variables to change</p>
+  <mat-form-field class="dataset-selection">
+    <mat-label>Available headers</mat-label>
+    <mat-select [formControl]="columnNamesControl" multiple>
+      <mat-select-trigger>
+        {{columnNamesControl.value ? columnNamesControl.value[0] : ''}}
+        <span *ngIf="columnNamesControl.value?.length > 1">
+          (+{{columnNamesControl.value.length - 1}} {{columnNamesControl.value?.length === 2 ? 'other' : 'others'}})
+        </span>
+      </mat-select-trigger>
+      <mat-option *ngFor="let header of columnNames" [value]="header">{{header}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <p>Choose a fill method</p>
+  <mat-form-field class="dataset-selection" appearance="fill">
+    <mat-label>Fill method</mat-label>
+    <mat-select [(ngModel)]="selectedMethodName">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of methodNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <br>
+
+  <mat-form-field class="dataset-selection" appearance="fill" *ngIf="selectedMethodName == 'constant'">
+    <mat-label>Constant value</mat-label>
+    <input matInput type="number" [(ngModel)]="selectedConstant">
+  </mat-form-field>
+
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+  <button mat-button (click)="onAccept()"
+    [disabled]="!selectedMethodName || !selectedMethodName">Ok</button>
+</div>
