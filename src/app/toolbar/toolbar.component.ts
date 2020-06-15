@@ -10,6 +10,13 @@ import { StatisticsComponent } from '../statistics/statistics.component';
 import { SplitByComponent } from '../split-by/split-by.component';
 import { UpdateComponent } from '../update/update.component';
 import { RenameColumnsComponent } from '../rename-columns/rename-columns.component';
+import { JoinComponent } from '../join/join.component';
+import { FillEmptyValuesComponent } from '../fill-empty-values/fill-empty-values.component';
+import { RenameCategoriesComponent } from '../rename-categories/rename-categories.component';
+import { GroupComponent } from '../group/group.component';
+import { CorrelationMatrixComponent } from '../correlation-matrix/correlation-matrix.component';
+import { SampleDataComponent } from '../sample-data/sample-data.component';
+import { ShorteningFloatsComponent } from '../shortening-floats/shortening-floats.component';
 
 @Component({
   selector: 'app-toolbar',
@@ -31,22 +38,21 @@ export class ToolbarComponent implements OnInit {
     const inputNode: any = document.querySelector('#file');
     const file = inputNode.files[0];
 
-    this.data.loadData(file, (headers, save) => {
+    this.data.loadDataFromFile(file, (headers, save) => {
 
       const dialogRef = this.dialog.open(SelectIndexComponent, {
-        width: '250px',
         data: { headers: headers }
       });
 
       dialogRef.afterClosed().subscribe(result => {
-        save(result, (collectionName) => {
-          this.dashboardService.addComponent(collectionName, DataTableComponent,
-            (component => {
-              component.instance.collectionName = collectionName;
-            }));
-
-          // this.collectionNamesLoaded.emit(this.data.getCollectionNames());
-        });
+        if (result === null || Array.isArray(result)) {
+          save(result, (collectionName) => {
+            this.dashboardService.addComponent(collectionName, DataTableComponent,
+              (component => {
+                component.instance.collectionName = collectionName;
+              }));
+          });
+        }
       });
     });
   }
@@ -59,8 +65,16 @@ export class ToolbarComponent implements OnInit {
     this.dashboardService.addComponent('Histogram', HistogramComponent, () => { });
   }
 
+  openCorrelationMatrix()  {
+    this.dashboardService.addComponent('Correlation matrix', CorrelationMatrixComponent, () => { });
+  }
+
   openStatistics() {
     this.dashboardService.addComponent('Statistics', StatisticsComponent, () => { });
+  }
+
+  openSampleData() {
+    this.dialog.open(SampleDataComponent);
   }
 
   openSplitBy() {
@@ -73,6 +87,26 @@ export class ToolbarComponent implements OnInit {
 
   openRenameColumns() {
     this.dialog.open(RenameColumnsComponent);
+  }
+
+  openJoin() {
+    this.dialog.open(JoinComponent);
+  }
+
+  openFillEmptyValues() {
+    this.dialog.open(FillEmptyValuesComponent);
+  }
+
+  openShortenFloats() {
+    this.dialog.open(ShorteningFloatsComponent);
+  }
+
+  openRenameCategories() {
+    this.dialog.open(RenameCategoriesComponent);
+  }
+
+  openGroup() {
+    this.dialog.open(GroupComponent);
   }
 
 }
