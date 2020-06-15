@@ -46,6 +46,10 @@
   </mat-form-field>
 </div>
 
-<plotly-plot [layout]="graph.layout"></plotly-plot>
+<plotly-plot [layout]="graph.layout" [data]="graph.data" *ngIf="graph.data.length > 0"></plotly-plot>
+<div class="graph-big-icon-container" *ngIf="graph.data.length <= 0">
+  <mat-icon>bar_chart</mat-icon>
+</div>
+
 
 <mat-checkbox [(ngModel)]="keepAspectRation" (change)="reloadData()">Keep aspect ratio</mat-checkbox>

@@ -34,7 +34,8 @@ export class HistogramComponent implements OnInit {
       width: 800, height: 600,
       margin: { l: 40, r: 10, t: 20, b: 40 },
       yaxis: { title: { text: 'Count' } },
-    }
+    },
+    data: []
   };
 
   constructor(private dataService: DataService, private dashboardService: DashboardService) { }
@@ -45,7 +46,12 @@ export class HistogramComponent implements OnInit {
 
 
   reloadData() {
-    let dataLists = [];
+    this.graph.data = [];
+
+    if (this.selectedVariables.length <= 0) {
+      return;
+    }
+
     let usedVariableNames: string[] = [];
 
     for (let variable of this.selectedVariables) {
@@ -70,22 +76,16 @@ export class HistogramComponent implements OnInit {
         .find()
         .mapReduce(o => o[variable.selectedVariableName], a => a);
 
-      dataLists.push(data);
+      this.graph.data.push(data);
       usedVariableNames.push(variable.selectedVariableName);
     }
 
-    this.plotly.data = dataLists;
     this.configureLayout(usedVariableNames);
     this.dashboardService.setSuheader(this, `${this.selectedVariables.map(v => v.dataset).join(', ')}`);
   }
 
   configureLayout(usedVariableNames: string[]) {
-    let layout = {
-      ...this.graph.layout,
-      xaxis: { title: { text: usedVariableNames.join(' + ') } },
-    };
-
-    this.plotly.layout = layout;
+    this.graph.layout["xaxis"] = { title: { text: usedVariableNames.join(' + ') } }
   }
 
   onDatasetSelectionChange(variableIndex: number, event: MatSelectChange) {

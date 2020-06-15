@@ -24,11 +24,12 @@ export class ScatterPlotComponent implements OnInit {
   limit: number = 1000;
   keepAspectRation: boolean = false;
 
-  public graph = {
+  public graph: any = {
     layout: {
       width: 800, height: 600,
       margin: { l: 40, r: 10, t: 10, b: 40 }
-    }
+    },
+    data: []
   };
 
   constructor(private dataService: DataService, private dashboardService: DashboardService) { }
@@ -39,6 +40,8 @@ export class ScatterPlotComponent implements OnInit {
 
 
   reloadData() {
+    this.graph.data = [];
+
     if (!this.collectionName
       || !this.xVariableName
       || !this.yVariableName
@@ -46,34 +49,33 @@ export class ScatterPlotComponent implements OnInit {
       return;
     }
 
-    let data = { type: 'scatter', mode: 'markers' }
+    this.graph.data[0] = { type: 'scattergl', mode: 'markers' };
 
-    data["x"] = this.dataService.getView(this.collectionName).chain()
+    this.graph.data[0]["x"] = this.dataService.getView(this.collectionName).chain()
       .find()
       .limit(this.limit)
       .mapReduce(o => o[this.xVariableName], a => a);
 
-    data["y"] = this.dataService.getView(this.collectionName).chain()
+      this.graph.data[0]["y"] = this.dataService.getView(this.collectionName).chain()
       .find()
       .limit(this.limit)
       .mapReduce(o => o[this.yVariableName], a => a);
 
     if (this.zVariableName) {
-      data["z"] = this.dataService.getView(this.collectionName).chain()
+      this.graph.data[0]["z"] = this.dataService.getView(this.collectionName).chain()
         .find()
         .limit(this.limit)
         .mapReduce(o => o[this.zVariableName], a => a);
 
-      data["type"] = "scatter3d";
+        this.graph.data[0]["type"] = "scatter3d";
     }
 
-    this.plotly.data = [data];
     this.configureLayout();
     this.dashboardService.setSuheader(this, `${this.collectionName}`);
   }
 
   configureLayout() {
-    let layout = {
+    this.graph.layout = {
       ...this.graph.layout,
       xaxis: { title: { text: this.xVariableName } },
       yaxis: { title: { text: this.yVariableName } },
@@ -81,12 +83,16 @@ export class ScatterPlotComponent implements OnInit {
     };
 
     if (this.keepAspectRation) {
-      layout.xaxis["constrain"] = 'domain';
-      layout.yaxis["scaleanchor"] = 'x';
-      layout.zaxis["scaleanchor"] = 'x';
+      this.graph.layout.xaxis["constrain"] = 'domain';
+      this.graph.layout.yaxis["scaleanchor"] = 'x';
+      this.graph.layout.zaxis["scaleanchor"] = 'x';
+      this.graph.layout["scene"] = {aspectmode: 'data'};
+    } else {
+      delete this.graph.layout.xaxis["constrain"];
+      delete this.graph.layout.yaxis["scaleanchor"];
+      delete this.graph.layout.zaxis["scaleanchor"];
+      delete this.graph.layout['scene'];
     }
-
-    this.plotly.layout = layout;
   }
 
   onDatasetSelectionChange() {

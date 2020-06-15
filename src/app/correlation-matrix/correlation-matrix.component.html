@@ -8,4 +8,7 @@
   </mat-select>
 </mat-form-field>
 
-<plotly-plot [layout]="graph.layout" [data]="graph.data"></plotly-plot>
+<plotly-plot [layout]="graph.layout" [data]="graph.data" *ngIf="graph.data[0].z.length > 0"></plotly-plot>
+<div class="graph-big-icon-container" *ngIf="graph.data[0].z.length <= 0">
+  <mat-icon>bar_chart</mat-icon>
+</div>
