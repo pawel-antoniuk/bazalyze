@@ -1,0 +1,22 @@
+{
+    "index": "",
+    "SEQN": "nr",
+    "RIAGENDR": "plec",
+    "RIDAGEYR": "wiek",
+    "DMDHHSIZ": "gospodarstwo",
+    "DMDMARTL": "stan_cywilny",
+    "BMXBMI": "BMI",
+    "BMXWT": "waga",
+    "BMXHT": "wysokosc",
+    "LBXWBCSI": "leukocyty",
+    "LBXHGB": "hemoglobina",
+    "ALQ110": "alkohol",
+    "SMQ040": "palacy",
+    "LBDHDL": "HDL_Cholesterol",
+    "LBTC": "TC_Cholesterol",
+    "LBTR": "Trojglicerydy",
+    "LBLDL": "LDL_Cholesterol",
+    "BPXSY": "ciśnienie_skurcz",
+    "BPXDI": "ciśnienie_rozkurcz",
+    "CARDIO": "choroba_wiencow"
+}
