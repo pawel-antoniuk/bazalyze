@@ -26,20 +26,17 @@ export class DataService {
     indicesSelector: (headers: string[],
       save: (indicies: string[], complete: (collectionName: string) => void) => void) => void) {
 
-    const fileName = file.name.split('.')[0];
+    let fileName = file.name.split('.')[0];
     let parseResult: ParseResult;
 
-    const previousCollection = db.getCollection(fileName);
-    if (previousCollection != null) {
-      db.removeCollection(fileName);
-    }
+    const collectionName = this.generateCollectionName(fileName);
 
     let save = (indicies: string[],
       complete: (collectionName: string) => void) => {
 
-      this.addCollection(fileName, indicies, parseResult.meta.fields, parseResult.data);
+      this.addCollection(collectionName, indicies, parseResult.meta.fields, parseResult.data);
       parseResult = null;
-      complete(fileName);
+      complete(collectionName);
     };
 
     this.papa.parse(file, {
@@ -58,20 +55,17 @@ export class DataService {
     indicesSelector: (headers: string[],
       save: (indicies: string[], complete: (collectionName: string) => void) => void) => void) {
 
-    const fileName = assetName.split('.')[0];
+    let fileName = assetName.split('.')[0];
     let parseResult: ParseResult;
 
-    const previousCollection = db.getCollection(fileName);
-    if (previousCollection != null) {
-      db.removeCollection(fileName);
-    }
+    const collectionName = this.generateCollectionName(fileName);
 
     let save = (indicies: string[],
       complete: (collectionName: string) => void) => {
 
-      this.addCollection(fileName, indicies, parseResult.meta.fields, parseResult.data);
+      this.addCollection(collectionName, indicies, parseResult.meta.fields, parseResult.data);
       parseResult = null;
-      complete(fileName);
+      complete(collectionName);
     };
 
     fetch(`assets/${assetName}`).then(r => r.text()).then(data => {
@@ -86,6 +80,24 @@ export class DataService {
         dynamicTyping: true
       });
     });
+  }
+
+  private generateCollectionName(datasetName: string) {
+    let previousCollection = db.getCollection(datasetName);
+    if (previousCollection == null) {
+      return datasetName;
+    }
+
+    let i: number;
+    for (i = 2; ; ++i) {
+      previousCollection = db.getCollection(`${datasetName} ${i}`);
+      console.log(i);
+      if (previousCollection == null) {
+        break;
+      }
+    }
+
+    return `${datasetName} ${i}`;
   }
 
   public getCollectionNames() {
