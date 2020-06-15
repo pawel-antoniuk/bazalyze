@@ -1,1 +1,64 @@
-<p>join works!</p>
+<h1 mat-dialog-title>Join datasets</h1>
+
+<div mat-dialog-content>
+
+  <p>Select first dataset and its variable</p>
+
+  <mat-form-field class="dataset-selection" appearance="fill">
+    <mat-label>Dataset</mat-label>
+    <mat-select [(ngModel)]="leftSelectedViewName" (selectionChange)="onLeftDatasetSelectionChange()">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of viewNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="dataset-min-selection" appearance="fill">
+    <mat-label>Variable</mat-label>
+    <mat-select [(ngModel)]="leftSelectedVariableName" (selectionChange)="generateNewDatasetName()">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of leftVariableNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <p>Select second dataset and its variable</p>
+
+  <mat-form-field class="dataset-selection" appearance="fill">
+    <mat-label>Dataset</mat-label>
+    <mat-select [(ngModel)]="rightSelectedViewName" (selectionChange)="onRightDatasetSelectionChange()">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of viewNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="dataset-min-selection" appearance="fill">
+    <mat-label>Variable</mat-label>
+    <mat-select [(ngModel)]="rightSelectedVariableName" (selectionChange)="generateNewDatasetName()">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of rightVariableNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <p>Both datasets will be joined together into the following new dataset</p>
+
+  <mat-form-field class="dataset-big-selection" appearance="fill">
+    <mat-label>New dataset name</mat-label>
+    <input matInput [(ngModel)]="newDatasetName">
+  </mat-form-field>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+  <button mat-button (click)="onJoin()" [disabled]="!leftSelectedViewName
+      || !leftSelectedVariableName || !rightSelectedViewName
+      || !rightSelectedVariableName || !newDatasetName">
+    Join
+  </button>
+</div>

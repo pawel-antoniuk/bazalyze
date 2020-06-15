@@ -2,9 +2,6 @@
   <mat-card-title>
     <p class="dashboard-title-header">
       {{title}}
-      <span class="dashboard-title-subheader" *ngIf="subheader">
-      &nbsp;- {{subheader}}
-      </span>
       <span class="fill-remaining-space"></span>
       <button mat-icon-button (click)="onClone()">
         <mat-icon>file_copy</mat-icon>
@@ -14,6 +11,9 @@
       </button>
     </p>
   </mat-card-title>
+  <mat-card-subtitle *ngIf="subheader">
+    {{subheader}}
+  </mat-card-subtitle>
   <mat-card-content>
     <template #container></template>
   </mat-card-content>

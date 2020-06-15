@@ -1,5 +1,5 @@
 <div class="statistics-buttons-container">
-  <mat-form-field class="dataset-min-selection" appearance="fill">
+  <mat-form-field class="dataset-selection" appearance="fill">
     <mat-label>Dataset</mat-label>
     <mat-select [(ngModel)]="collectionName" (selectionChange)="onDatasetSelectionChange()">
       <mat-option>(Clear)</mat-option>
@@ -19,7 +19,7 @@
     </mat-select>
   </mat-form-field>
 
-  <p *ngIf="collectionName">&nbsp;(Number of variables: {{variablesCount}})</p>
+  <p *ngIf="collectionName">&nbsp;(vars: {{variablesCount}})</p>
 </div>
 
 <mat-grid-list cols="8" class="statistics-table">

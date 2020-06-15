@@ -61,11 +61,12 @@ export class RenameColumnsComponent implements OnInit {
 
     let fileReader = new FileReader();
     fileReader.onload = (e) => {
-      const names: {[id: string]: string} = JSON.parse(fileReader.result.toString());
+      const names: { [id: string]: string } = JSON.parse(fileReader.result.toString());
 
       this.originalColumnNames.forEach((originalName, index) => {
-        this.columnNames[index] = names[originalName];
-        console.log(names[index]);
+        if (originalName in names) {
+          this.columnNames[index] = names[originalName];
+        }
       });
     }
     fileReader.readAsText(file);

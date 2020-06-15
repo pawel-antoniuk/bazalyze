@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 import _ from "lodash";
 import { MatDialogRef } from '@angular/material/dialog';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-split-by',
@@ -13,8 +14,8 @@ export class SplitByComponent implements OnInit {
   viewNames: string[] = [];
   variableNames: string[] = [];
 
-  viewName: string;
-  variableName: string;
+  variableNameControl = new FormControl();
+  viewNameControl = new FormControl();
 
   constructor(private dataService: DataService,
     private dialogRef: MatDialogRef<SplitByComponent>) { }
@@ -24,33 +25,45 @@ export class SplitByComponent implements OnInit {
   }
 
   onDatasetSelectionChange() {
-    this.variableNames = this.dataService.getViewColumns(this.viewName);
-    this.variableName = '';
+    this.variableNames = [];
+    (this.viewNameControl.value as string[]).forEach(viewName => {
+      this.variableNames.push(...this.dataService.getViewColumns(viewName));
+    });
+    this.variableNames = _.uniq(this.variableNames);
   }
 
   onAccept() {
-    const collectionName = this.dataService.getViewNameCollection(this.viewName);
-    const columnNames = this.dataService.getViewColumns(this.viewName);
-    const indices = this.dataService.getViewIndices(this.viewName);
+    (this.viewNameControl.value as string[]).forEach(viewName => {
 
-    let groups: { [id: string]: any[] } = {}
-    this.dataService.getView(this.viewName).find()
-      .forEach(o => {
-        const value = o[this.variableName];
-        if (!(value in groups)) {
-          groups[value] = [];
+      const collectionName = this.dataService.getViewNameCollection(viewName);
+      const columnNames = this.dataService.getViewColumns(viewName);
+      const indices = this.dataService.getViewIndices(viewName);
+
+      (this.variableNameControl.value as string[]).forEach(variableName => {
+        if (columnNames.includes(variableName)) {
+          let groups: { [id: string]: any[] } = {}
+          this.dataService.getView(viewName).find()
+            .forEach(o => {
+              const value = o[variableName];
+              if (!(value in groups)) {
+                groups[value] = [];
+              }
+
+              groups[value].push(_.pick(o, columnNames.filter(c => c != variableName)));
+            });
+
+          const viewColumnNames = columnNames.filter(c => c != variableName);
+
+          for (let [value, group] of Object.entries(groups)) {
+            this.dataService.addCollectionView(collectionName,
+              `${viewName} (${variableName} = ${value})`,
+              viewColumnNames, indices, group)
+          }
         }
-
-        groups[value].push(_.pick(o, columnNames));
       });
 
-    for (let [value, group] of Object.entries(groups)) {
-      this.dataService.addCollectionView(collectionName,
-        `${this.viewName} (${this.variableName} = ${value})`,
-        columnNames, indices, group)
-    }
-
-    this.dataService.collectionUpdated(collectionName);
+      this.dataService.collectionUpdated(collectionName);
+    });
 
     this.dialogRef.close();
   }

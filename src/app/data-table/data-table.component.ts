@@ -37,7 +37,6 @@ export class DataTableComponent implements OnInit, OnDestroy, CloneableDashboard
   ngOnInit(): void {
     if (!this.selectedViewName) {
       this.selectedViewName = this.dataService.getCollectionViewNames(this.collectionName)[0];
-      console.log(this.selectedViewName);
     }
     this.onDataUpdate();
   }
@@ -62,6 +61,22 @@ export class DataTableComponent implements OnInit, OnDestroy, CloneableDashboard
     otherComponentInstance.collectionName = this.collectionName;
     otherComponentInstance.selectedViewName = this.selectedViewName;
     this.dataService.addCollectionHandle(this.collectionName);
+  }
+
+  onViewDelete() {
+    const availableViewNames = this.dataService.getCollectionViewNames(this.collectionName);
+    const currentViewNameIndex = availableViewNames.findIndex(v => v == this.selectedViewName);
+    let newViewName: string;
+
+    if (currentViewNameIndex > 0) {
+      newViewName = availableViewNames[currentViewNameIndex - 1];
+    } else {
+      newViewName = availableViewNames[currentViewNameIndex + 1]
+    }
+
+    const oldSelectedViewName = this.selectedViewName;
+    this.selectedViewName = newViewName;
+    this.dataService.removeView(oldSelectedViewName);
   }
 
 }

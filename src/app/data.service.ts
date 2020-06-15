@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Papa, ParseResult } from 'ngx-papaparse';
-import loki, { Collection, LokiFsAdapter } from 'lokijs';
+import loki, { Collection } from 'lokijs';
 
 let db: loki = new loki('db.json');
 
@@ -22,38 +22,24 @@ export class DataService {
 
   constructor(private papa: Papa) { }
 
-  public loadData(file: File,
+  public loadDataFromFile(file: File,
     indicesSelector: (headers: string[],
       save: (indicies: string[], complete: (collectionName: string) => void) => void) => void) {
 
+    const fileName = file.name.split('.')[0];
     let parseResult: ParseResult;
 
-    const previousCollection = db.getCollection(file.name);
+    const previousCollection = db.getCollection(fileName);
     if (previousCollection != null) {
-      db.removeCollection(file.name);
+      db.removeCollection(fileName);
     }
 
     let save = (indicies: string[],
       complete: (collectionName: string) => void) => {
 
-      let collection: Collection = db.addCollection(file.name, {
-        indices: indicies
-      });
-
-      collection.insert(parseResult.data);
-
-      this.collections[file.name] = {
-        onUpdateCallback: [],
-        views: [{
-          viewName: file.name,
-          columnNames: parseResult.meta.fields
-        }],
-        handles: 1
-      };
-
+      this.addCollection(fileName, indicies, parseResult.meta.fields, parseResult.data);
       parseResult = null;
-
-      complete(collection.name);
+      complete(fileName);
     };
 
     this.papa.parse(file, {
@@ -65,6 +51,40 @@ export class DataService {
       header: true,
       skipEmptyLines: true,
       dynamicTyping: true
+    });
+  }
+
+  public loadDataFromAssets(assetName: string,
+    indicesSelector: (headers: string[],
+      save: (indicies: string[], complete: (collectionName: string) => void) => void) => void) {
+
+    const fileName = assetName.split('.')[0];
+    let parseResult: ParseResult;
+
+    const previousCollection = db.getCollection(fileName);
+    if (previousCollection != null) {
+      db.removeCollection(fileName);
+    }
+
+    let save = (indicies: string[],
+      complete: (collectionName: string) => void) => {
+
+      this.addCollection(fileName, indicies, parseResult.meta.fields, parseResult.data);
+      parseResult = null;
+      complete(fileName);
+    };
+
+    fetch(`assets/${assetName}`).then(r => r.text()).then(data => {
+      this.papa.parse(data, {
+        complete: (result) => {
+          parseResult = result;
+          indicesSelector(result.meta.fields, save);
+        },
+        transformHeader: (header) => header === '' ? 'ID' : header,
+        header: true,
+        skipEmptyLines: true,
+        dynamicTyping: true
+      });
     });
   }
 
@@ -128,6 +148,23 @@ export class DataService {
     this.collections[collectionName].onUpdateCallback.push(callback);
   }
 
+  public addCollection(collectionName: string, indices: string[], columnNames: string[], data: any[]) {
+    let collection: Collection = db.addCollection(collectionName, {
+      indices: indices
+    });
+
+    collection.insert(data);
+
+    this.collections[collectionName] = {
+      onUpdateCallback: [],
+      views: [{
+        viewName: collectionName,
+        columnNames: columnNames
+      }],
+      handles: 1
+    };
+  }
+
   public addCollectionView(collectionName: string, viewName: string,
     columnNames: string[], indicies: string[], data: any[]) {
 
@@ -142,6 +179,17 @@ export class DataService {
     });
   }
 
+  public removeView(viewName: string) {
+    Object.entries(this.collections).forEach(([cName, c]) => {
+      const foundIndex = c.views.findIndex(v => v.viewName == viewName);
+      if (foundIndex != -1) {
+        db.removeCollection(c.views[foundIndex].viewName);
+        c.views.splice(foundIndex, 1);
+        this.collectionUpdated(cName);
+      }
+    });
+  }
+
   public addCollectionHandle(collectionName: string) {
     this.collections[collectionName].handles += 1;
   }
@@ -150,6 +198,7 @@ export class DataService {
     this.collections[collectionName].handles -= 1;
 
     if (this.collections[collectionName].handles <= 0) {
+      this.collections[collectionName].views.forEach(v => db.removeCollection(v.viewName));
       db.removeCollection(collectionName);
       delete this.collections[collectionName];
     }

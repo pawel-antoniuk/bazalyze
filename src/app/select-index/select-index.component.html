@@ -1,12 +1,15 @@
 <h1 mat-dialog-title>Select indicies</h1>
 
 <div mat-dialog-content>
-  <mat-form-field>
+  <p>Select index columns for better performance</p>
+  <p>An index will be created for each selected column </p>
+
+  <mat-form-field class="dataset-selection">
     <mat-label>Available headers</mat-label>
     <mat-select [formControl]="headers" multiple>
       <mat-select-trigger>
         {{headers.value ? headers.value[0] : ''}}
-        <span *ngIf="headers.value?.length > 1" class="example-additional-selection">
+        <span *ngIf="headers.value?.length > 1">
           (+{{headers.value.length - 1}} {{headers.value?.length === 2 ? 'other' : 'others'}})
         </span>
       </mat-select-trigger>

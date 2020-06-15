@@ -67,8 +67,6 @@ export class ScatterPlotComponent implements OnInit {
       data["type"] = "scatter3d";
     }
 
-    console.log(data);
-
     this.plotly.data = [data];
     this.configureLayout();
     this.dashboardService.setSuheader(this, `${this.collectionName}`);

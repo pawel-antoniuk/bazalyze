@@ -29,7 +29,6 @@ export class StatisticsComponent implements OnInit {
     this.collectionNames = this.dataService.getViewNames();
   }
 
-
   reloadData() {
     if (!this.collectionName
       || !this.variableName) {

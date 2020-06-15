@@ -31,7 +31,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DashboardItemComponent } from './dashboard-item/dashboard-item.component';
 import { MatInputModule } from '@angular/material/input';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HistogramComponent } from './histogram/histogram.component';
 import { StatisticsComponent } from './statistics/statistics.component';
 import { SplitByComponent } from './split-by/split-by.component';
@@ -39,6 +39,14 @@ import { UpdateComponent } from './update/update.component';
 import { AlertComponent } from './alert/alert.component';
 import { RenameColumnsComponent } from './rename-columns/rename-columns.component';
 import { JoinComponent } from './join/join.component';
+import { FillEmptyValuesComponent } from './fill-empty-values/fill-empty-values.component';
+import { RenameCategoriesComponent } from './rename-categories/rename-categories.component';
+import { MatDividerModule } from '@angular/material/divider';
+import { GroupComponent } from './group/group.component';
+import { CorrelationMatrixComponent } from './correlation-matrix/correlation-matrix.component';
+import { SampleDataComponent } from './sample-data/sample-data.component';
+import { FrontComponent } from './front/front.component';
+import { ShorteningFloatsComponent } from './shortening-floats/shortening-floats.component';
 
 PlotlyViaCDNModule.plotlyVersion = '1.54.2';
 PlotlyViaCDNModule.plotlyBundle = null;
@@ -59,7 +67,14 @@ PlotlyViaCDNModule.plotlyBundle = null;
     UpdateComponent,
     AlertComponent,
     RenameColumnsComponent,
-    JoinComponent
+    JoinComponent,
+    FillEmptyValuesComponent,
+    RenameCategoriesComponent,
+    GroupComponent,
+    CorrelationMatrixComponent,
+    SampleDataComponent,
+    FrontComponent,
+    ShorteningFloatsComponent
   ],
   imports: [
     BrowserModule,
@@ -86,7 +101,8 @@ PlotlyViaCDNModule.plotlyBundle = null;
     DragDropModule,
     FlexLayoutModule,
     MatInputModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatDividerModule
   ],
   providers: [],
   bootstrap: [AppComponent]

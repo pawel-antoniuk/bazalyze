@@ -1,4 +1,3 @@
-
 <mat-toolbar color="primary" class="app-navbar">
   <mat-toolbar-row>
     <span class="toolbar-title-header">
@@ -14,17 +13,17 @@
       File
     </button>
 
-    <button mat-button [matMenuTriggerFor]="changesMenu">
+    <!-- <button mat-button [matMenuTriggerFor]="changesMenu">
       Changes
-    </button>
+    </button> -->
 
     <button mat-button [matMenuTriggerFor]="transformMenu">
       Transform
     </button>
 
-    <button mat-button [matMenuTriggerFor]="statisticsMenu">
+    <!-- <button mat-button [matMenuTriggerFor]="statisticsMenu">
       Statistics
-    </button>
+    </button> -->
 
     <button mat-button [matMenuTriggerFor]="analyzeMenu">
       Analyze
@@ -42,31 +41,40 @@
 </mat-menu>
 
 <mat-menu #fileMenu="matMenu">
-  <button mat-menu-item (click)="fileInput.click()">Load from disk</button>
-  <button mat-menu-item (click)="fileInput.click()">Load sample</button>
+  <button mat-menu-item (click)="fileInput.click()">Import from file</button>
+  <button mat-menu-item (click)="openSampleData()">Open sample dataset</button>
+  <button mat-menu-item>Export to file</button>
 </mat-menu>
 
-<mat-menu #changesMenu="matMenu">
+<!-- <mat-menu #changesMenu="matMenu">
   <button mat-menu-item>Apply</button>
   <button mat-menu-item>Undo</button>
-</mat-menu>
+</mat-menu> -->
 
 <mat-menu #transformMenu="matMenu">
-  <button mat-menu-item (click)="openSplitBy()">Split by</button>
-  <button mat-menu-item (click)="openUpdate()">Update</button>
+  <button mat-menu-item (click)="openSplitBy()">Split by variable</button>
+  <button mat-menu-item (click)="openJoin()">Join datasets</button>
+  <button mat-menu-item (click)="openGroup()"> Group by variable</button>
+
+  <mat-divider></mat-divider>
+
+  <button mat-menu-item (click)="openUpdate()">Update values</button>
   <button mat-menu-item (click)="openRenameColumns()">Rename columns</button>
-  <button mat-menu-item>Join</button>
-  <button mat-menu-item>Fill</button>
-  <button mat-menu-item>Group by</button>
+  <button mat-menu-item (click)="openRenameCategories()">Rename categories</button>
+  <button mat-menu-item (click)="openFillEmptyValues()">Fill empty values</button>
+  <button mat-menu-item (click)="openShortenFloats()">Shorten floats</button>
 </mat-menu>
 
+<!--
 <mat-menu #statisticsMenu="matMenu">
-  <button mat-menu-item (click)="openStatistics()">Basic statistics</button>
-</mat-menu>
+
+</mat-menu> -->
 
 <mat-menu #analyzeMenu="matMenu">
+  <button mat-menu-item (click)="openStatistics()">Basic statistics</button>
   <button mat-menu-item (click)="openHistogram()">Histogram</button>
   <button mat-menu-item (click)="openScatterPlot()">Scatter plot</button>
+  <button mat-menu-item (click)="openCorrelationMatrix()">Correlation matrix</button>
 </mat-menu>
 
 <input hidden (change)="onFileSelected()" #fileInput type="file" id="file" [accept]="'.csv'">

@@ -1,11 +1,16 @@
-<mat-form-field class="dataset-selection" appearance="fill" *ngIf="collectionViewNames.length > 1">
-  <mat-label>View</mat-label>
-  <mat-select [(ngModel)]="selectedViewName" (selectionChange)="onCollectionViewSelected()">
-    <mat-option *ngFor="let name of collectionViewNames" [value]="name">
-      {{name}}
-    </mat-option>
-  </mat-select>
-</mat-form-field>
+<div class="table-view-container" *ngIf="collectionViewNames.length > 1">
+  <mat-form-field class="dataset-selection" appearance="fill">
+    <mat-label>View</mat-label>
+    <mat-select [(ngModel)]="selectedViewName" (selectionChange)="onCollectionViewSelected()">
+      <mat-option *ngFor="let name of collectionViewNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <button mat-button mat-icon-button (click)="onViewDelete()">
+    <mat-icon>delete</mat-icon>
+  </button>
+</div>
 
 <div class="data-table-container">
   <table mat-table [dataSource]="dataSource" matSort>

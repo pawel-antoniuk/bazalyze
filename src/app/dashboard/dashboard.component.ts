@@ -18,7 +18,7 @@ export class DashboardComponent implements OnInit {
 
   @ViewChild("container", { read: ViewContainerRef }) container: ViewContainerRef;
 
-  private dashboardItems: {item: ComponentRef<DashboardItemComponent>, component?: ComponentRef<any>}[] = [];
+  dashboardItems: {item: ComponentRef<DashboardItemComponent>, component?: ComponentRef<any>}[] = [];
 
   constructor(private resolver: ComponentFactoryResolver,
     private dashboardService: DashboardService,
@@ -46,9 +46,10 @@ export class DashboardComponent implements OnInit {
   }
 
   public removeComponent(componentInstance) {
-    const item = this.dashboardItems.find(o => o.item.instance === componentInstance
+    const itemIndex = this.dashboardItems.findIndex(o => o.item.instance === componentInstance
       || o.component.instance === componentInstance);
-    item.item.destroy()
+    this.dashboardItems[itemIndex].item.destroy();
+    this.dashboardItems.splice(itemIndex, 1);
   }
 
   public setSuheader(componentInstance: any, subheader: string) {

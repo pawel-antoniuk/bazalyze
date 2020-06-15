@@ -1,8 +1,13 @@
 <div class="histogram-button-container">
 
+  <mat-form-field appearance="fill">
+    <mat-label>Bin size</mat-label>
+    <input matInput type="number" [(ngModel)]="binSize" (input)="onChangeBinSize()">
+  </mat-form-field>
+
   <span *ngFor="let selectedVariable of selectedVariables; index as i">
 
-    <mat-form-field class="dataset-min-selection" appearance="fill">
+    <mat-form-field class="dataset-selection" appearance="fill">
       <mat-label>Dataset</mat-label>
       <mat-select (selectionChange)="onDatasetSelectionChange(i, $event)"
         [ngModel]="selectedVariable.dataset">
@@ -26,17 +31,12 @@
 
   </span>
 
-  <mat-form-field appearance="fill">
-    <mat-label>Bin size</mat-label>
-    <input matInput type="number" [(ngModel)]="binSize" (input)="onChangeBinSize()">
-  </mat-form-field>
-
 </div>
-
 
 <button mat-button mat-icon-button (click)="addVariable()">
   <mat-icon>add</mat-icon>
 </button>
 
-
 <plotly-plot [layout]="graph.layout"></plotly-plot>
+
+<mat-checkbox [(ngModel)]="normalized" (change)="reloadData()">Normalized</mat-checkbox>

@@ -16,8 +16,9 @@ export class HistogramComponent implements OnInit {
   plotly: PlotComponent;
 
   collectionNames: string[] = [];
-
   binSize = 1;
+  normalized: boolean = false;
+
   selectedVariables: [{
     dataset: string,
     selectedVariableName: string,
@@ -54,11 +55,15 @@ export class HistogramComponent implements OnInit {
       }
 
       let data = {
-        name: variable.selectedVariableName,
+        name: `${variable.dataset}[${variable.selectedVariableName}]`,
         type: 'histogram',
         xbins: {
           size: this.binSize
         }
+      }
+
+      if (this.normalized) {
+        data['histnorm'] = 'probability';
       }
 
       data["x"] = this.dataService.getView(variable.dataset).chain()
@@ -71,7 +76,7 @@ export class HistogramComponent implements OnInit {
 
     this.plotly.data = dataLists;
     this.configureLayout(usedVariableNames);
-    this.dashboardService.setSuheader(this, `${this.selectedVariables.map(v => v.dataset).join(' + ')}`);
+    this.dashboardService.setSuheader(this, `${this.selectedVariables.map(v => v.dataset).join(', ')}`);
   }
 
   configureLayout(usedVariableNames: string[]) {

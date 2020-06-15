@@ -52,10 +52,22 @@ body {
   width: 250px;
 }
 
+.dataset-big-selection {
+  width: 650px;
+}
+
 mat-form-field {
   width: 140px;
 }
 
 .mat-select-panel {
   max-width: 1000px;
+}
+
+.mat-card-subtitle {
+  max-width: 700px;
+}
+
+.mat-select-panel {
+  max-width: 650px !important;
 }
