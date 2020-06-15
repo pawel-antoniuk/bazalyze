@@ -1,0 +1,45 @@
+<h1 mat-dialog-title>Rename categories</h1>
+
+<div mat-dialog-content>
+
+  <p>Select a dataset and its variable, and then rename categories</p>
+
+  <mat-form-field class="dataset-selection" appearance="fill">
+    <mat-label>Dataset</mat-label>
+    <mat-select [(ngModel)]="selectedViewName" (selectionChange)="onDatasetSelectionChange()">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of viewNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <br>
+
+  <mat-form-field class="dataset-selection" appearance="fill">
+    <mat-label>Variable</mat-label>
+    <mat-select [(ngModel)]="selectedVariableName" (selectionChange)="onVariableSelectionChange()">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of variableNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <p>Categories</p>
+
+  <span *ngFor="let category of categories | keyvalue">
+    <mat-form-field class="dataset-selection" appearance="fill">
+      <mat-label>Renamed {{ category.key }}</mat-label>
+      <input matInput [(ngModel)]="category.value.name">
+    </mat-form-field>
+    <br>
+  </span>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+  <button mat-button (click)="onAccept()" [disabled]="!selectedVariableName || !selectedViewName">
+    Rename
+  </button>
+</div>
