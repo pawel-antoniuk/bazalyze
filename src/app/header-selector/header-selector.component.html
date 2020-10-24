@@ -1,16 +1,18 @@
-<h1 mat-dialog-title>Select header</h1>
+<h1 mat-dialog-title>Import settings</h1>
 
 <div mat-dialog-content>
-  <p>Please specify if your dataset contains a header row</p>
-
   <div class="checkbox-wrapper">
     <mat-checkbox [formControl]="hasHeader">The datasets contains header row</mat-checkbox>
+  </div>
+
+  <div class="checkbox-wrapper">
+    <mat-checkbox [formControl]="generateIndex">Generate index column</mat-checkbox>
   </div>
 </div>
 
 <div mat-dialog-actions align="end">
   <button mat-button [mat-dialog-close]="undefined">Close</button>
-  <button mat-button [mat-dialog-close]="hasHeader.value" cdkFocusInitial>
+  <button mat-button [mat-dialog-close]="{'hasHeader': hasHeader.value, 'generateIndex': generateIndex.value}" cdkFocusInitial>
     Ok
   </button>
 </div>

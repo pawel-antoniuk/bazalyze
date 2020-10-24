@@ -9,6 +9,7 @@ import { FormControl } from '@angular/forms';
 export class HeaderSelectorComponent implements OnInit {
 
   hasHeader = new FormControl(true);
+  generateIndex = new FormControl(true);
 
   constructor() { }
 

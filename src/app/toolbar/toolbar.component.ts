@@ -19,6 +19,10 @@ import { SampleDataComponent } from '../sample-data/sample-data.component';
 import { ShorteningFloatsComponent } from '../shortening-floats/shortening-floats.component';
 import { FilterComponent } from '../filter/filter.component';
 import { HeaderSelectorComponent } from '../header-selector/header-selector.component';
+import { ToNumericalComponent } from '../to-numerical/to-numerical.component';
+import { DiscretizeComponent } from '../discretize/discretize.component';
+import { NormalizeComponent } from '../normalize/normalize.component';
+import { ConvertNumberRangeComponent } from '../convert-number-range/convert-number-range.component';
 
 @Component({
   selector: 'app-toolbar',
@@ -42,14 +46,14 @@ export class ToolbarComponent implements OnInit {
 
     this.dialog.open(HeaderSelectorComponent, {
 
-    }).afterClosed().subscribe(hasHeader => {
-      if(hasHeader === undefined) {
+    }).afterClosed().subscribe(importSettings => {
+      if(importSettings === undefined) {
         return;
       }
 
-      this.data.loadDataFromFile(file, hasHeader, (headers, save) => {
+      this.data.loadDataFromFile(file, importSettings, (headers, proposedIndices, save) => {
         this.dialog.open(SelectIndexComponent, {
-          data: { headers: headers }
+          data: { headers, proposedIndices }
         }).afterClosed().subscribe(result => {
           if (result === null || Array.isArray(result)) {
             save(result, (collectionName) => {
@@ -64,6 +68,22 @@ export class ToolbarComponent implements OnInit {
 
     });
 
+  }
+
+  openToNumerical() {
+    this.dialog.open(ToNumericalComponent);
+  }
+
+  openDiscretize() {
+    this.dialog.open(DiscretizeComponent);
+  }
+
+  openNormalize() {
+    this.dialog.open(NormalizeComponent);
+  }
+
+  openConvertRange() {
+    this.dialog.open(ConvertNumberRangeComponent);
   }
 
   openScatterPlot() {

@@ -4,6 +4,9 @@ import loki, { Collection } from 'lokijs';
 
 let db: loki = new loki('db.json');
 
+type SaveCallback = (indicies: string[], complete: (collectionName: string) => void) => void;
+type IndicesSelectorCallback = (headers: string[], proposedIndices: string[], save: SaveCallback) => void
+
 @Injectable({
   providedIn: 'root'
 })
@@ -22,42 +25,146 @@ export class DataService {
 
   constructor(private papa: Papa) { }
 
-  public loadDataFromFile(file: File, hasHeader: boolean,
-    indicesSelector: (headers: string[],
-      save: (indicies: string[], complete: (collectionName: string) => void) => void) => void) {
+  public loadDataFromFile(file: File, importSettings: any,
+    indicesSelector: IndicesSelectorCallback) {
 
-    let fileName = file.name.split('.')[0];
-    let parseResult: ParseResult;
-
-    const collectionName = this.generateCollectionName(fileName);
+    const fileName = file.name.split('.')[0];
 
     this.papa.parse(file, {
-      complete: (result) => {
-        parseResult = result;
-
-        let header: string[];
-        if (result.meta.fields === undefined) {
-          header = Array.from(
-            { length: result.data[0].length - 1 },
-            (x, i) => i.toString()
-          );
-        } else {
-          header = result.meta.fields;
-        }
-
-        indicesSelector(header, (indicies: string[],
-          complete: (collectionName: string) => void) => {
-          this.addCollection(collectionName, indicies, header, parseResult.data);
-          parseResult = null;
-          complete(collectionName);
-        });
+      complete: parseResult => {
+        this.createIndicesAndAddCollection(fileName, parseResult,
+          importSettings.generateIndex, indicesSelector);
       },
       transformHeader: (header) => header === '' ? 'ID' : header,
-      header: hasHeader,
+      header: importSettings.hasHeader,
       skipEmptyLines: true,
       dynamicTyping: true,
-      comments: "#"
+      comments: "#",
     });
+  }
+
+  private createIndicesAndAddCollection(filename: string, parseResult: ParseResult,
+    generateIndex: boolean, indicesSelector: IndicesSelectorCallback) {
+
+    const data = parseResult.data;
+    const collectionName = this.generateCollectionName(filename);
+    this.handleCommaNumbers(data);
+    const header = this.getHeader(parseResult);
+    // const columnTypes = this.getColumnTypes(header, data);
+    this.repairTypeConsistency(data);
+
+    let proposedIndices = [];
+    if(generateIndex) {
+      proposedIndices.push('#');
+      this.generateIndex(data, header);
+    }
+
+    indicesSelector(header, proposedIndices, (indicies, complete) => {
+      this.addCollection(collectionName, indicies, header, data);
+      parseResult = null;
+      complete(collectionName);
+    });
+  }
+
+  private getHeader(parseResult: ParseResult) {
+    let header: string[];
+    if (parseResult.meta.fields === undefined) {
+      header = Array.from(
+        { length: parseResult.data[0].length - 1 },
+        (x, i) => i.toString()
+      );
+    } else {
+      header = parseResult.meta.fields;
+    }
+
+    return header;
+  }
+
+  private getColumnTypes(header: string[], data: any[]) {
+    let columnTypes: string[];
+
+    for(const columnName of header) {
+      const thisColumnTypes = {'string': 0, 'number': 0, 'boolean': 0, 'undefined': 0};
+      for(let i = 0; i < Math.sqrt(data.length); ++i) {
+        thisColumnTypes[typeof data[i][columnName]] += 1;
+      }
+
+      let maxValue = 0;
+      let maxKey = 'string';
+      for(const [key, value] of Object.entries(thisColumnTypes)) {
+        if(value > maxValue) {
+          maxKey = key;
+          maxValue = value;
+        }
+      }
+
+      columnTypes.push(maxKey);
+    }
+
+    return columnTypes;
+  }
+
+  private handleCommaNumbers(data: any[]) {
+    const dataLength = data.length;
+
+    for (const fieldName in data[0]) {
+      const parsed = this.parseCommaNumberColumn(data, fieldName);
+
+      if (parsed.isParsed && parsed.successfullyParsedCount > dataLength / 2) {
+        for (let i = 0; i < dataLength; ++i) {
+          data[i][fieldName] = parsed.parsedNumbers[i];
+        }
+      }
+    }
+  }
+
+  private generateIndex(data: any[], header: string[]) {
+    header.unshift('#');
+
+    let i = 0;
+    for(let row of data) {
+      row['#'] = i;
+      i += 1;
+    }
+  }
+
+  private parseCommaNumberColumn(data: any[], fieldName: string) {
+    const dataLength = data.length;
+
+    const splitPoint = Math.floor(Math.sqrt(dataLength));
+    const parsedNumbers = new Array(dataLength);
+    let successfullyParsedCount = 0;
+
+    const parse = (begin: number, end: number) => {
+      for (let i = begin; i < end; ++i) {
+        const val = this.parseCommaNumber(data[i][fieldName]);
+        parsedNumbers[i] = val;
+        if (!isNaN(val)) {
+          successfullyParsedCount += 1;
+        }
+      }
+    };
+
+    parse(0, splitPoint);
+    let isParsed = false;
+    if (successfullyParsedCount > splitPoint / 2) {
+      parse(splitPoint, dataLength);
+      isParsed = true;
+    }
+
+    return { isParsed, parsedNumbers, successfullyParsedCount };
+  }
+
+  private parseCommaNumber(strNumber: string): number {
+    if(typeof strNumber === 'string') {
+      return parseFloat(strNumber.replace(',', '.'));
+    } else {
+      return NaN;
+    }
+  }
+
+  private repairTypeConsistency(parseResult: ParseResult) {
+
   }
 
   public loadDataFromAssets(assetName: string,
@@ -160,10 +267,6 @@ export class DataService {
     return db.getCollection(viewName);
   }
 
-  // public getCollectionViewNames(collectionName: string) {
-  //   return this.collections[collectionName].views.map(v => v.viewName);
-  // }
-
   public onCollectionUpdate(collectionName: string, callback: () => void) {
     this.collections[collectionName].onUpdateCallback.push(callback);
   }
@@ -173,10 +276,10 @@ export class DataService {
       indices: indices
     });
 
-    if(Array.isArray(data[0])) {
+    if (Array.isArray(data[0])) {
       data = data.map(row => {
         let obj = {};
-        for(let i = 0; i < row.length; ++i) {
+        for (let i = 0; i < row.length; ++i) {
           obj[i.toString()] = row[i];
         }
         return obj;

@@ -20,6 +20,7 @@ import { DataTableComponent } from './data-table/data-table.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { ToolbarComponent } from './toolbar/toolbar.component';
@@ -49,6 +50,11 @@ import { FrontComponent } from './front/front.component';
 import { ShorteningFloatsComponent } from './shortening-floats/shortening-floats.component';
 import { FilterComponent } from './filter/filter.component';
 import { HeaderSelectorComponent } from './header-selector/header-selector.component';
+import { ToNumericalComponent } from './to-numerical/to-numerical.component';
+import { DiscretizeComponent } from './discretize/discretize.component';
+import { DatasetAndVariablesSelectorComponent } from './dataset-and-variables-selector/dataset-and-variables-selector.component';
+import { NormalizeComponent } from './normalize/normalize.component';
+import { ConvertNumberRangeComponent } from './convert-number-range/convert-number-range.component';
 
 PlotlyViaCDNModule.plotlyVersion = '1.54.2';
 PlotlyViaCDNModule.plotlyBundle = null;
@@ -79,7 +85,11 @@ PlotlyViaCDNModule.plotlyBundle = null;
     ShorteningFloatsComponent,
     FilterComponent,
     HeaderSelectorComponent,
-    HeaderSelectorComponent
+    ToNumericalComponent,
+    DiscretizeComponent,
+    DatasetAndVariablesSelectorComponent,
+    NormalizeComponent,
+    ConvertNumberRangeComponent
   ],
   imports: [
     BrowserModule,
@@ -107,7 +117,8 @@ PlotlyViaCDNModule.plotlyBundle = null;
     FlexLayoutModule,
     MatInputModule,
     MatCheckboxModule,
-    MatDividerModule
+    MatDividerModule,
+    MatRadioModule
   ],
   providers: [],
   bootstrap: [AppComponent]

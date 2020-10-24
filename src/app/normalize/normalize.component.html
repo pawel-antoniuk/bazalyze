@@ -1,0 +1,27 @@
+<h1 mat-dialog-title>Normalize a continuous variable</h1>
+
+<p>Normalize the standard deviation and mean of the variable distribution</p>
+
+<div mat-dialog-content>
+  <app-dataset-and-variables-selector
+    [(selectedColumnNames)]="selectedColumnNames"
+    [(selectedViewName)]="selectedViewName"
+  >
+  </app-dataset-and-variables-selector>
+
+  <br />
+
+  <div class="checkbox-wrapper">
+    <mat-checkbox [(ngModel)]="createNewColumn"
+      >Create new column</mat-checkbox
+    >
+  </div>
+
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+  <button mat-button (click)="onAccept()" [disabled]="selectedColumnNames.length == 0">
+    Ok
+  </button>
+</div>

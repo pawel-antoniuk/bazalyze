@@ -1,0 +1,39 @@
+<h1 mat-dialog-title>Map values from one range to another</h1>
+
+<div mat-dialog-content>
+  <app-dataset-and-variables-selector
+    [(selectedColumnNames)]="selectedColumnNames"
+    [(selectedViewName)]="selectedViewName"
+  >
+  </app-dataset-and-variables-selector>
+
+  <p>Please specify the lower and upper limit of the new range</p>
+
+  <mat-form-field class="dataset-selection" appearance="fill">
+    <mat-label>Lower limit</mat-label>
+    <input matInput type="number" [(ngModel)]="lowerLimit">
+  </mat-form-field>
+
+  <br />
+
+  <mat-form-field class="dataset-selection" appearance="fill">
+    <mat-label>Upper limit</mat-label>
+    <input matInput type="number" [(ngModel)]="upperLimit">
+  </mat-form-field>
+
+  <br />
+
+  <div class="checkbox-wrapper">
+    <mat-checkbox [(ngModel)]="createNewColumn"
+      >Create new column</mat-checkbox
+    >
+  </div>
+
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+  <button mat-button (click)="onAccept()" [disabled]="selectedColumnNames.length == 0 || lowerLimit == undefined || upperLimit == undefined">
+    Ok
+  </button>
+</div>

@@ -52,6 +52,13 @@
 </mat-menu> -->
 
 <mat-menu #transformMenu="matMenu">
+  <button mat-menu-item (click)="openToNumerical()">To numerical</button>
+  <button mat-menu-item (click)="openDiscretize()">Discretize</button>
+  <button mat-menu-item (click)="openNormalize()">Normalize distribution</button>
+  <button mat-menu-item (click)="openConvertRange()">Arbitrary range scaling</button>
+
+  <mat-divider></mat-divider>
+
   <button mat-menu-item (click)="openFilter()">Filter</button>
   <button mat-menu-item (click)="openSplitBy()">Split by variable</button>
   <button mat-menu-item (click)="openJoin()">Join datasets</button>
@@ -78,4 +85,4 @@
   <button mat-menu-item (click)="openCorrelationMatrix()">Correlation matrix</button>
 </mat-menu>
 
-<input hidden (change)="onFileSelected()" #fileInput type="file" id="file" [accept]="'.csv,.txt'">
+<input hidden (change)="onFileSelected()" #fileInput type="file" id="file" [accept]="'.csv,.txt,.tsv'">
