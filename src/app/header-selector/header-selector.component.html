@@ -1,0 +1,16 @@
+<h1 mat-dialog-title>Select header</h1>
+
+<div mat-dialog-content>
+  <p>Please specify if your dataset contains a header row</p>
+
+  <div class="checkbox-wrapper">
+    <mat-checkbox [formControl]="hasHeader">The datasets contains header row</mat-checkbox>
+  </div>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button [mat-dialog-close]="undefined">Close</button>
+  <button mat-button [mat-dialog-close]="hasHeader.value" cdkFocusInitial>
+    Ok
+  </button>
+</div>

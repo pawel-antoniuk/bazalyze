@@ -15,7 +15,7 @@
   </mat-form-field>
 
   <mat-form-field class="dataset-min-selection" appearance="fill">
-    <mat-label>Variable</mat-label>
+    <mat-label>Left join variable</mat-label>
     <mat-select [(ngModel)]="leftSelectedVariableName" (selectionChange)="generateNewDatasetName()">
       <mat-option>(Clear)</mat-option>
       <mat-option *ngFor="let name of leftVariableNames" [value]="name">
@@ -37,7 +37,7 @@
   </mat-form-field>
 
   <mat-form-field class="dataset-min-selection" appearance="fill">
-    <mat-label>Variable</mat-label>
+    <mat-label>Right join variable</mat-label>
     <mat-select [(ngModel)]="rightSelectedVariableName" (selectionChange)="generateNewDatasetName()">
       <mat-option>(Clear)</mat-option>
       <mat-option *ngFor="let name of rightVariableNames" [value]="name">

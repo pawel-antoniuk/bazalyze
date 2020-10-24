@@ -22,7 +22,7 @@ export class DataService {
 
   constructor(private papa: Papa) { }
 
-  public loadDataFromFile(file: File,
+  public loadDataFromFile(file: File, hasHeader: boolean,
     indicesSelector: (headers: string[],
       save: (indicies: string[], complete: (collectionName: string) => void) => void) => void) {
 
@@ -31,23 +31,32 @@ export class DataService {
 
     const collectionName = this.generateCollectionName(fileName);
 
-    let save = (indicies: string[],
-      complete: (collectionName: string) => void) => {
-
-      this.addCollection(collectionName, indicies, parseResult.meta.fields, parseResult.data);
-      parseResult = null;
-      complete(collectionName);
-    };
-
     this.papa.parse(file, {
       complete: (result) => {
         parseResult = result;
-        indicesSelector(result.meta.fields, save);
+
+        let header: string[];
+        if (result.meta.fields === undefined) {
+          header = Array.from(
+            { length: result.data[0].length - 1 },
+            (x, i) => i.toString()
+          );
+        } else {
+          header = result.meta.fields;
+        }
+
+        indicesSelector(header, (indicies: string[],
+          complete: (collectionName: string) => void) => {
+          this.addCollection(collectionName, indicies, header, parseResult.data);
+          parseResult = null;
+          complete(collectionName);
+        });
       },
       transformHeader: (header) => header === '' ? 'ID' : header,
-      header: true,
+      header: hasHeader,
       skipEmptyLines: true,
-      dynamicTyping: true
+      dynamicTyping: true,
+      comments: "#"
     });
   }
 
@@ -163,6 +172,16 @@ export class DataService {
     let collection: Collection = db.addCollection(collectionName, {
       indices: indices
     });
+
+    if(Array.isArray(data[0])) {
+      data = data.map(row => {
+        let obj = {};
+        for(let i = 0; i < row.length; ++i) {
+          obj[i.toString()] = row[i];
+        }
+        return obj;
+      });
+    }
 
     collection.insert(data);
 

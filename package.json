@@ -24,6 +24,7 @@
     "@angular/router": "~9.1.11",
     "@types/lokijs": "^1.5.3",
     "angular-plotly.js": "^2.0.0",
+    "component": "^1.1.0",
     "lodash": "^4.17.15",
     "lokijs": "^1.5.8",
     "masonry-layout": "^4.2.2",
@@ -56,5 +57,10 @@
     "ts-node": "~8.3.0",
     "tslint": "~6.1.0",
     "typescript": "~3.8.3"
+  },
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
   }
 }

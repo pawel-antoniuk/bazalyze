@@ -18,6 +18,7 @@ import { CorrelationMatrixComponent } from '../correlation-matrix/correlation-ma
 import { SampleDataComponent } from '../sample-data/sample-data.component';
 import { ShorteningFloatsComponent } from '../shortening-floats/shortening-floats.component';
 import { FilterComponent } from '../filter/filter.component';
+import { HeaderSelectorComponent } from '../header-selector/header-selector.component';
 
 @Component({
   selector: 'app-toolbar',
@@ -39,23 +40,30 @@ export class ToolbarComponent implements OnInit {
     const inputNode: any = document.querySelector('#file');
     const file = inputNode.files[0];
 
-    this.data.loadDataFromFile(file, (headers, save) => {
+    this.dialog.open(HeaderSelectorComponent, {
 
-      const dialogRef = this.dialog.open(SelectIndexComponent, {
-        data: { headers: headers }
+    }).afterClosed().subscribe(hasHeader => {
+      if(hasHeader === undefined) {
+        return;
+      }
+
+      this.data.loadDataFromFile(file, hasHeader, (headers, save) => {
+        this.dialog.open(SelectIndexComponent, {
+          data: { headers: headers }
+        }).afterClosed().subscribe(result => {
+          if (result === null || Array.isArray(result)) {
+            save(result, (collectionName) => {
+              this.dashboardService.addComponent(collectionName, DataTableComponent,
+                (component => {
+                  component.instance.collectionName = collectionName;
+                }));
+            });
+          }
+        });
       });
 
-      dialogRef.afterClosed().subscribe(result => {
-        if (result === null || Array.isArray(result)) {
-          save(result, (collectionName) => {
-            this.dashboardService.addComponent(collectionName, DataTableComponent,
-              (component => {
-                component.instance.collectionName = collectionName;
-              }));
-          });
-        }
-      });
     });
+
   }
 
   openScatterPlot() {

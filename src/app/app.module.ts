@@ -48,6 +48,7 @@ import { SampleDataComponent } from './sample-data/sample-data.component';
 import { FrontComponent } from './front/front.component';
 import { ShorteningFloatsComponent } from './shortening-floats/shortening-floats.component';
 import { FilterComponent } from './filter/filter.component';
+import { HeaderSelectorComponent } from './header-selector/header-selector.component';
 
 PlotlyViaCDNModule.plotlyVersion = '1.54.2';
 PlotlyViaCDNModule.plotlyBundle = null;
@@ -76,7 +77,9 @@ PlotlyViaCDNModule.plotlyBundle = null;
     SampleDataComponent,
     FrontComponent,
     ShorteningFloatsComponent,
-    FilterComponent
+    FilterComponent,
+    HeaderSelectorComponent,
+    HeaderSelectorComponent
   ],
   imports: [
     BrowserModule,

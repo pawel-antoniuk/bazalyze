@@ -13,8 +13,11 @@
 
 .data-table-container {
   overflow: auto;
-  max-height: 800px;
   display: flex;
-  justify-content: center;
+  max-height: 90vh;
+  max-width: 90vw;
 }
 
+.data-table-table {
+  margin: auto;
+}

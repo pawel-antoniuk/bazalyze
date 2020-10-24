@@ -1,10 +1,10 @@
 export const ParticlesConfig = {
   "particles": {
     "number": {
-      "value": 150,
+      "value": 80,
       "density": {
         "enable": true,
-        "value_area": 800
+        "value_area": 500
       }
     },
     "color": {
@@ -48,7 +48,7 @@ export const ParticlesConfig = {
       "width": 1
     },
     "move": {
-      "enable": false,
+      "enable": true,
       "speed": 0.3,
       "direction": "none",
       "random": false,
@@ -102,5 +102,5 @@ export const ParticlesConfig = {
     }
   },
   "retina_detect": true,
-  "fpsLimit": 5
+  "fpsLimit": 8
 }
