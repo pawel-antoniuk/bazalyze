@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DataService } from '../data.service';
 import { ToNumericalComponent } from '../to-numerical/to-numerical.component';
-import { min, max} from 'simple-statistics'
+import { min, max } from 'simple-statistics'
 
 @Component({
   selector: 'app-discretize',
@@ -16,6 +16,7 @@ export class DiscretizeComponent implements OnInit {
   selectedViewName: string | undefined;
   bins: number | undefined;
   createNewColumn = false;
+  convertToText = false;
 
   constructor(private dataService: DataService,
     private dialogRef: MatDialogRef<ToNumericalComponent>) { }
@@ -33,18 +34,42 @@ export class DiscretizeComponent implements OnInit {
       const minValue = min(columnValues);
       const maxValue = max(columnValues);
 
-      if(this.createNewColumn) {
-        const newColumnName = `discret(${columnName})`;
-        this.dataService.getView(this.selectedViewName).data.forEach(row => {
-          row[newColumnName] = this.discretize(row[columnName], minValue, maxValue);
-        });
+      let targetColumnName;
+      if (this.createNewColumn) {
+        if (this.convertToText) {
+          targetColumnName = `discret(${columnName}, ${this.bins}, text)`;
+        } else {
+          targetColumnName = `discret(${columnName}, ${this.bins})`;
+        }
+      } else {
+        targetColumnName = columnName;
+      }
 
-        this.dataService.getViewColumns(this.selectedViewName).push(newColumnName);
-        this.dataService.collectionUpdated(this.selectedViewName);
+      if (this.convertToText) {
+        let textValues = {};
+        for (let i = 0; i <= (maxValue - minValue) / this.bins; ++i) {
+          const lowerLimit = i * (maxValue - minValue) / this.bins + minValue;
+          const upperLimit = (i + 1) * (maxValue - minValue) / this.bins + minValue;
+          textValues[i] = `[${lowerLimit.toFixed(2)}, ${upperLimit.toFixed(2)})`;
+        }
+
+        const lastIndex = Math.floor((maxValue - minValue) / this.bins) + 1;
+        const lowerLimit = lastIndex * (maxValue - minValue) / this.bins + minValue;
+        const upperLimit = (lastIndex + 1) * (maxValue - minValue) / this.bins + minValue;
+        textValues[lastIndex] = `[${lowerLimit.toFixed(2)}, ${upperLimit.toFixed(2)}]`;
+
+        this.dataService.getView(this.selectedViewName).data.forEach(row => {
+          row[targetColumnName] = textValues[this.discretize(row[columnName], minValue, maxValue)];
+        });
       } else {
         this.dataService.getView(this.selectedViewName).data.forEach(row => {
-          row[columnName] = this.discretize(row[columnName], minValue, maxValue);
+          row[targetColumnName] = this.discretize(row[columnName], minValue, maxValue);
         });
+      }
+
+      if (this.createNewColumn) {
+        this.dataService.getViewColumns(this.selectedViewName).push(targetColumnName);
+        this.dataService.collectionUpdated(this.selectedViewName);
       }
     });
 
@@ -54,7 +79,7 @@ export class DiscretizeComponent implements OnInit {
   }
 
   private discretize(currentValue: number, minValue: number, maxValue: number) {
-    return Math.floor((currentValue - minValue) / (maxValue - minValue) * this.bins);
+    return Math.floor((currentValue - minValue) / (maxValue - minValue + 0.00001) * this.bins);
   }
 
 }

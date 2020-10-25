@@ -41,15 +41,28 @@
   </mat-form-field>
 
   <mat-form-field appearance="fill">
+    <mat-label>Class</mat-label>
+    <mat-select [(ngModel)]="classVariableName" (selectionChange)="reloadData()">
+      <mat-option>(Clear)</mat-option>
+      <mat-option *ngFor="let name of variableNames" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <br/>
+
+  <mat-form-field appearance="fill" class='plot-limit-input'>
     <mat-label>Limit</mat-label>
     <input matInput type="number" [(ngModel)]="limit" (input)="reloadData()">
   </mat-form-field>
+
 </div>
+
 
 <plotly-plot [layout]="graph.layout" [data]="graph.data" *ngIf="graph.data.length > 0"></plotly-plot>
 <div class="graph-big-icon-container" *ngIf="graph.data.length <= 0">
   <mat-icon>bar_chart</mat-icon>
 </div>
-
 
 <mat-checkbox [(ngModel)]="keepAspectRation" (change)="reloadData()">Keep aspect ratio</mat-checkbox>

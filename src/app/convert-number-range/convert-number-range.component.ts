@@ -34,7 +34,7 @@ export class ConvertNumberRangeComponent implements OnInit {
       const maxValue = max(columnValues);
 
       if(this.createNewColumn) {
-        const newColumnName = `scale(${columnName})`;
+        const newColumnName = `scale(${columnName}, ${this.lowerLimit}, ${this.upperLimit})`;
         this.dataService.getView(this.selectedViewName).data.forEach(row => {
           row[newColumnName] = this.convertRange(row[columnName], minValue, maxValue);
         });

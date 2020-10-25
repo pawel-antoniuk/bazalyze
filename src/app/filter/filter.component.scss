@@ -1,0 +1,15 @@
+.operator-field {
+  width: 100px;
+}
+
+.constant-field {
+  width: 300px;
+}
+
+.checkbox-wrapper {
+  min-height: 50px;
+  display: flex;
+  >mat-checkbox{
+      align-self: center;
+  }
+}

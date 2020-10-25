@@ -5,6 +5,7 @@ import { SplitByComponent } from '../split-by/split-by.component';
 import { DataService } from '../data.service';
 import { SelectIndexComponent } from '../select-index/select-index.component';
 import { DataTableComponent } from '../data-table/data-table.component';
+import { DataLoaderService } from '../data-loader.service';
 
 @Component({
   selector: 'app-sample-data',
@@ -17,33 +18,17 @@ export class SampleDataComponent implements OnInit {
   otherResources: string[] = ['medical_data_names.json', 'mortality_data_names.json', 'readme.txt']
   selectedDataset: string;
 
-  constructor(private dataService: DataService,
-    private dialog: MatDialog,
-    private dashboardService: DashboardService,
+  constructor(private dataLoader: DataLoaderService,
     private dialogRef: MatDialogRef<SplitByComponent>) { }
 
   ngOnInit(): void {
   }
 
   onLoad() {
-    this.dataService.loadDataFromAssets(this.selectedDataset, (headers, save) => {
-
-      const dialogRef = this.dialog.open(SelectIndexComponent, {
-        data: { headers: headers }
-      });
-
-      dialogRef.afterClosed().subscribe(result => {
-        if (result === null || Array.isArray(result)) {
-          save(result, (collectionName) => {
-            this.dashboardService.addComponent(collectionName, DataTableComponent,
-              (component => {
-                component.instance.collectionName = collectionName;
-              }));
-          });
-        }
-      });
-    });
-
+    const url = `${window.location.href}assets/${this.selectedDataset}`;
+    console.log(url);
+    const name = this.selectedDataset.split('.')[0];
+    this.dataLoader.loadAsset(url, name);
     this.dialogRef.close();
   }
 

@@ -4,6 +4,7 @@ import { MatOptionSelectionChange } from '@angular/material/core';
 import { PlotlyModule, PlotComponent } from 'angular-plotly.js';
 import { MatSelectChange } from '@angular/material/select';
 import { DashboardService } from '../dashboard.service';
+import { min, max, variance, sampleStandardDeviation, mean, mode, quantile, sampleSkewness } from 'simple-statistics'
 
 @Component({
   selector: 'app-histogram',
@@ -16,7 +17,7 @@ export class HistogramComponent implements OnInit {
   plotly: PlotComponent;
 
   collectionNames: string[] = [];
-  binSize = 1;
+  bins: number | undefined;
   normalized: boolean = false;
 
   selectedVariables: [{
@@ -60,11 +61,21 @@ export class HistogramComponent implements OnInit {
         continue;
       }
 
+      const columnValues = this.dataService.getView(variable.dataset).chain()
+        .where(o => o[variable.selectedVariableName] != null)
+        .mapReduce(o => o[variable.selectedVariableName], a => a);
+      const minValue = min(columnValues);
+      const maxValue = max(columnValues);
+
+      if(this.bins == undefined) {
+        this.bins = Math.floor(Math.sqrt(columnValues.length));
+      }
+
       let data = {
         name: `${variable.dataset}[${variable.selectedVariableName}]`,
         type: 'histogram',
         xbins: {
-          size: this.binSize
+          size: (maxValue - minValue) / (this.bins - 1)
         }
       }
 

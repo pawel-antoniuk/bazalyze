@@ -1,8 +1,8 @@
 <div class="histogram-button-container">
 
   <mat-form-field appearance="fill">
-    <mat-label>Bin size</mat-label>
-    <input matInput type="number" [(ngModel)]="binSize" (input)="onChangeBinSize()">
+    <mat-label>Bins</mat-label>
+    <input matInput type="number" [(ngModel)]="bins" (input)="onChangeBinSize()">
   </mat-form-field>
 
   <span *ngFor="let selectedVariable of selectedVariables; index as i">

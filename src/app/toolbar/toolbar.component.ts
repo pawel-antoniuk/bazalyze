@@ -23,6 +23,7 @@ import { ToNumericalComponent } from '../to-numerical/to-numerical.component';
 import { DiscretizeComponent } from '../discretize/discretize.component';
 import { NormalizeComponent } from '../normalize/normalize.component';
 import { ConvertNumberRangeComponent } from '../convert-number-range/convert-number-range.component';
+import { DataLoaderService } from '../data-loader.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -34,6 +35,7 @@ export class ToolbarComponent implements OnInit {
   @Output() collectionNamesLoaded = new EventEmitter<string[]>();
 
   constructor(private data: DataService,
+    private dataLoader: DataLoaderService,
     private dialog: MatDialog,
     private dashboardService: DashboardService) { }
 
@@ -43,31 +45,7 @@ export class ToolbarComponent implements OnInit {
   onFileSelected() {
     const inputNode: any = document.querySelector('#file');
     const file = inputNode.files[0];
-
-    this.dialog.open(HeaderSelectorComponent, {
-
-    }).afterClosed().subscribe(importSettings => {
-      if(importSettings === undefined) {
-        return;
-      }
-
-      this.data.loadDataFromFile(file, importSettings, (headers, proposedIndices, save) => {
-        this.dialog.open(SelectIndexComponent, {
-          data: { headers, proposedIndices }
-        }).afterClosed().subscribe(result => {
-          if (result === null || Array.isArray(result)) {
-            save(result, (collectionName) => {
-              this.dashboardService.addComponent(collectionName, DataTableComponent,
-                (component => {
-                  component.instance.collectionName = collectionName;
-                }));
-            });
-          }
-        });
-      });
-
-    });
-
+    this.dataLoader.loadFile(file);
   }
 
   openToNumerical() {

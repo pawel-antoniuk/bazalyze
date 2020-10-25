@@ -25,6 +25,7 @@
     "@types/lokijs": "^1.5.3",
     "angular-plotly.js": "^2.0.0",
     "component": "^1.1.0",
+    "distinct-colors": "^3.0.0",
     "lodash": "^4.17.20",
     "lokijs": "^1.5.11",
     "masonry-layout": "^4.2.2",

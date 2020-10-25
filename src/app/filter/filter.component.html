@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Filter</h1>
+<h1 mat-dialog-title>Filter by comparing values</h1>
 
 <div mat-dialog-content>
 
@@ -26,17 +26,35 @@
     </mat-select>
   </mat-form-field>
 
-  <p>Compare with</p>
+  <p>Comparison expression</p>
 
-  <mat-form-field class="dataset-selection" appearance="fill">
-    <mat-label>{{selectedVariableName}} =</mat-label>
+  <mat-form-field class="operator-field" appearance="fill">
+    <mat-label>Operator</mat-label>
+    <mat-select [(ngModel)]="selectedOperator">
+      <mat-option *ngFor="let name of operators" [value]="name">
+        {{name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="constant-field">
+    <mat-label>Constant</mat-label>
     <input matInput [(ngModel)]="selectedConstant">
   </mat-form-field>
+
+  <br/>
+
+  <div class="checkbox-wrapper">
+    <mat-checkbox [(ngModel)]="keepVariable"
+      >Keep the used variable in the result</mat-checkbox
+    >
+  </div>
+
 </div>
 
 <div mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Close</button>
-  <button mat-button (click)="onAccept()" [disabled]="!selectedVariableName || !selectedViewName">
+  <button mat-button (click)="onAccept()" [disabled]="!selectedVariableName || !selectedViewName || selectedConstant === undefined">
     Filter
   </button>
 </div>

@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Papa, ParseResult } from 'ngx-papaparse';
 import loki, { Collection } from 'lokijs';
+import { MatDialog } from '@angular/material/dialog';
+import { DataTableComponent } from './data-table/data-table.component';
+import { SelectIndexComponent } from './select-index/select-index.component';
+import { HeaderSelectorComponent } from './header-selector/header-selector.component';
+import { DashboardService } from './dashboard.service';
 
 let db: loki = new loki('db.json');
 
@@ -27,12 +32,20 @@ export class DataService {
 
   public loadDataFromFile(file: File, importSettings: any,
     indicesSelector: IndicesSelectorCallback) {
-
     const fileName = file.name.split('.')[0];
+    this.parse(file, fileName, importSettings, indicesSelector);
+  }
 
-    this.papa.parse(file, {
+  public loadDataFromAssets(url: string, name: string, importSettings: any,
+    indicesSelector: IndicesSelectorCallback) {
+    this.parse(url, name, importSettings, indicesSelector);
+  }
+
+  private parse(asset: File | string, datasetName: string, importSettings: any,
+    indicesSelector: IndicesSelectorCallback) {
+    this.papa.parse(asset, {
       complete: parseResult => {
-        this.createIndicesAndAddCollection(fileName, parseResult,
+        this.createIndicesAndAddCollection(datasetName, parseResult,
           importSettings.generateIndex, indicesSelector);
       },
       transformHeader: (header) => header === '' ? 'ID' : header,
@@ -40,6 +53,7 @@ export class DataService {
       skipEmptyLines: true,
       dynamicTyping: true,
       comments: "#",
+      download: true,
     });
   }
 
@@ -54,7 +68,7 @@ export class DataService {
     this.repairTypeConsistency(data);
 
     let proposedIndices = [];
-    if(generateIndex) {
+    if (generateIndex) {
       proposedIndices.push('#');
       this.generateIndex(data, header);
     }
@@ -83,16 +97,16 @@ export class DataService {
   private getColumnTypes(header: string[], data: any[]) {
     let columnTypes: string[];
 
-    for(const columnName of header) {
-      const thisColumnTypes = {'string': 0, 'number': 0, 'boolean': 0, 'undefined': 0};
-      for(let i = 0; i < Math.sqrt(data.length); ++i) {
+    for (const columnName of header) {
+      const thisColumnTypes = { 'string': 0, 'number': 0, 'boolean': 0, 'undefined': 0 };
+      for (let i = 0; i < Math.sqrt(data.length); ++i) {
         thisColumnTypes[typeof data[i][columnName]] += 1;
       }
 
       let maxValue = 0;
       let maxKey = 'string';
-      for(const [key, value] of Object.entries(thisColumnTypes)) {
-        if(value > maxValue) {
+      for (const [key, value] of Object.entries(thisColumnTypes)) {
+        if (value > maxValue) {
           maxKey = key;
           maxValue = value;
         }
@@ -122,7 +136,7 @@ export class DataService {
     header.unshift('#');
 
     let i = 0;
-    for(let row of data) {
+    for (let row of data) {
       row['#'] = i;
       i += 1;
     }
@@ -156,7 +170,7 @@ export class DataService {
   }
 
   private parseCommaNumber(strNumber: string): number {
-    if(typeof strNumber === 'string') {
+    if (typeof strNumber === 'string') {
       return parseFloat(strNumber.replace(',', '.'));
     } else {
       return NaN;
@@ -167,36 +181,36 @@ export class DataService {
 
   }
 
-  public loadDataFromAssets(assetName: string,
-    indicesSelector: (headers: string[],
-      save: (indicies: string[], complete: (collectionName: string) => void) => void) => void) {
+  // public loadDataFromAssets(assetName: string,
+  //   indicesSelector: (headers: string[],
+  //     save: (indicies: string[], complete: (collectionName: string) => void) => void) => void) {
 
-    let fileName = assetName.split('.')[0];
-    let parseResult: ParseResult;
+  //   let fileName = assetName.split('.')[0];
+  //   let parseResult: ParseResult;
 
-    const collectionName = this.generateCollectionName(fileName);
+  //   const collectionName = this.generateCollectionName(fileName);
 
-    let save = (indicies: string[],
-      complete: (collectionName: string) => void) => {
+  //   let save = (indicies: string[],
+  //     complete: (collectionName: string) => void) => {
 
-      this.addCollection(collectionName, indicies, parseResult.meta.fields, parseResult.data);
-      parseResult = null;
-      complete(collectionName);
-    };
+  //     this.addCollection(collectionName, indicies, parseResult.meta.fields, parseResult.data);
+  //     parseResult = null;
+  //     complete(collectionName);
+  //   };
 
-    fetch(`assets/${assetName}`).then(r => r.text()).then(data => {
-      this.papa.parse(data, {
-        complete: (result) => {
-          parseResult = result;
-          indicesSelector(result.meta.fields, save);
-        },
-        transformHeader: (header) => header === '' ? 'ID' : header,
-        header: true,
-        skipEmptyLines: true,
-        dynamicTyping: true
-      });
-    });
-  }
+  //   fetch(`assets/${assetName}`).then(r => r.text()).then(data => {
+  //     this.papa.parse(data, {
+  //       complete: (result) => {
+  //         parseResult = result;
+  //         indicesSelector(result.meta.fields, save);
+  //       },
+  //       transformHeader: (header) => header === '' ? 'ID' : header,
+  //       header: true,
+  //       skipEmptyLines: true,
+  //       dynamicTyping: true
+  //     });
+  //   });
+  // }
 
   private generateCollectionName(datasetName: string) {
     let previousCollection = db.getCollection(datasetName);
