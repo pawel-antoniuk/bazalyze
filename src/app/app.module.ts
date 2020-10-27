@@ -55,6 +55,7 @@ import { DiscretizeComponent } from './discretize/discretize.component';
 import { DatasetAndVariablesSelectorComponent } from './dataset-and-variables-selector/dataset-and-variables-selector.component';
 import { NormalizeComponent } from './normalize/normalize.component';
 import { ConvertNumberRangeComponent } from './convert-number-range/convert-number-range.component';
+import {MatListModule} from '@angular/material/list';
 
 PlotlyViaCDNModule.plotlyVersion = '1.54.2';
 PlotlyViaCDNModule.plotlyBundle = null;
@@ -118,7 +119,8 @@ PlotlyViaCDNModule.plotlyBundle = null;
     MatInputModule,
     MatCheckboxModule,
     MatDividerModule,
-    MatRadioModule
+    MatRadioModule,
+    MatListModule
   ],
   providers: [],
   bootstrap: [AppComponent]

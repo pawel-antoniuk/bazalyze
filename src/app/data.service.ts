@@ -1,52 +1,134 @@
 import { Injectable } from '@angular/core';
 import { Papa, ParseResult } from 'ngx-papaparse';
 import loki, { Collection } from 'lokijs';
-import { MatDialog } from '@angular/material/dialog';
-import { DataTableComponent } from './data-table/data-table.component';
-import { SelectIndexComponent } from './select-index/select-index.component';
-import { HeaderSelectorComponent } from './header-selector/header-selector.component';
-import { DashboardService } from './dashboard.service';
+import _ from 'lodash';
 
 let db: loki = new loki('db.json');
 
+export class LoadResult {
+  success: boolean;
+  headers?: string[];
+  proposedIndices?: string[];
+  save?: SaveCallback;
+}
+
 type SaveCallback = (indicies: string[], complete: (collectionName: string) => void) => void;
-type IndicesSelectorCallback = (headers: string[], proposedIndices: string[], save: SaveCallback) => void
+type LoadCompleteCallback = (result: LoadResult) => void
+type DataCollectionEntry = {
+  onUpdateCallback: (() => void)[],
+  views: {
+    viewName: string,
+    columnNames: string[],
+  }[],
+  handles: number
+};
+type LocalStorageEntry = {
+  collections: {[id: string]: any[]},
+  indices: {[id: string]: string[]},
+  dataCollectionEntry: DataCollectionEntry
+}
+type LocaStorageMetadataEntry = {
+  metaEntries: {[id: string]: {
+    date: Date
+  }}
+}
+
+const autoId = 'ID';
+
+function hasDuplicates(array: any[]) {
+  return (new Set(array)).size !== array.length;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
 
-  private collections: {
-    [id: string]: {
-      onUpdateCallback: (() => void)[],
-      views: {
-        viewName: string,
-        columnNames: string[],
-      }[],
-      handles: number
-    }
+  private dataCollectionEntries: {
+    [id: string]: DataCollectionEntry
   } = {};
 
   constructor(private papa: Papa) { }
 
   public loadDataFromFile(file: File, importSettings: any,
-    indicesSelector: IndicesSelectorCallback) {
+    completeCallback: LoadCompleteCallback) {
     const fileName = file.name.split('.')[0];
-    this.parse(file, fileName, importSettings, indicesSelector);
+    this.parse(file, fileName, importSettings, completeCallback);
   }
 
   public loadDataFromAssets(url: string, name: string, importSettings: any,
-    indicesSelector: IndicesSelectorCallback) {
-    this.parse(url, name, importSettings, indicesSelector);
+    completeCallback: LoadCompleteCallback) {
+    this.parse(url, name, importSettings, completeCallback);
+  }
+
+  public getViewaAsCsv(viewName: string) {
+    const entries = this.getViewEntries(viewName, -1);
+    const columns = this.getViewColumns(viewName);
+    const csv = this.papa.unparse(entries, {
+      columns: columns
+    });
+
+    return csv;
+  }
+
+  public getAutoIdName() {
+    return autoId;
+  }
+
+  public getSavedCollectionNames() {
+    return Object.keys(localStorage).filter(k => k.startsWith('collection_')).map(k => k.replace('collection_', ''));
+  }
+
+  public loadSavedCollection(collectionName: string) {
+    const collectionEntry: LocalStorageEntry = JSON.parse(localStorage[`collection_${collectionName}`]);
+    this.dataCollectionEntries[collectionName] = collectionEntry.dataCollectionEntry;
+
+    for(const view of collectionEntry.dataCollectionEntry.views) {
+      let collection: Collection = db.addCollection(collectionName, {
+        indices: collectionEntry.indices[view.viewName]
+      });
+      collection.insert(collectionEntry.collections[view.viewName].map(row => {
+        return _.omit(row, ['$loki', 'meta']);
+      }));
+    }
+  }
+
+  public getSavedCollectionDate(collectionName: string) {
+    let metadata: LocaStorageMetadataEntry = JSON.parse(localStorage.getItem('$metadata'));
+    return new Date(metadata.metaEntries[collectionName].date);
+  }
+
+  private saveInLocalStorage(collectionName: string, collectionEntry: DataCollectionEntry) {
+    console.log(`Saving collection: ${collectionName}`)
+    let localStorageEntry: LocalStorageEntry = {
+      dataCollectionEntry: collectionEntry,
+      collections: {},
+      indices: {}
+    };
+
+    for(const view of collectionEntry.views) {
+      localStorageEntry.collections[view.viewName] = this.getView(view.viewName).data;
+      localStorageEntry.indices[view.viewName] = this.getViewIndices(view.viewName);
+    }
+
+    localStorage.setItem(`collection_${collectionName}`, JSON.stringify(localStorageEntry));
+
+    let metadata: LocaStorageMetadataEntry = JSON.parse(localStorage.getItem('$metadata'));
+    if(!metadata) {
+      metadata = {
+        metaEntries: {}
+      };
+    }
+    metadata.metaEntries[collectionName] = {date: new Date()};
+    localStorage.setItem('$metadata', JSON.stringify(metadata));
   }
 
   private parse(asset: File | string, datasetName: string, importSettings: any,
-    indicesSelector: IndicesSelectorCallback) {
+    completeCallback: LoadCompleteCallback) {
     this.papa.parse(asset, {
       complete: parseResult => {
-        this.createIndicesAndAddCollection(datasetName, parseResult,
-          importSettings.generateIndex, indicesSelector);
+        this.addCollectionEntry(datasetName, parseResult,
+          importSettings.generateIndex, completeCallback);
       },
       transformHeader: (header) => header === '' ? 'ID' : header,
       header: importSettings.hasHeader,
@@ -57,26 +139,41 @@ export class DataService {
     });
   }
 
-  private createIndicesAndAddCollection(filename: string, parseResult: ParseResult,
-    generateIndex: boolean, indicesSelector: IndicesSelectorCallback) {
+  private addCollectionEntry(filename: string, parseResult: ParseResult,
+    generateIndex: boolean, completeCallback: LoadCompleteCallback) {
 
-    const data = parseResult.data;
+    let data = parseResult.data;
     const collectionName = this.generateCollectionName(filename);
     this.handleCommaNumbers(data);
     const header = this.getHeader(parseResult);
+
+    if(hasDuplicates(header)) {
+      completeCallback({
+        success: false,
+      });
+      return;
+    }
+
     // const columnTypes = this.getColumnTypes(header, data);
-    this.repairTypeConsistency(data);
+    this.repairTypeConsistency();
+    data = this.remapCollection(data);
 
     let proposedIndices = [];
-    if (generateIndex) {
-      proposedIndices.push('#');
+    proposedIndices.push(autoId);
+    if (!header.includes(autoId) && generateIndex) {
       this.generateIndex(data, header);
     }
 
-    indicesSelector(header, proposedIndices, (indicies, complete) => {
-      this.addCollection(collectionName, indicies, header, data);
-      parseResult = null;
-      complete(collectionName);
+    completeCallback({
+      success: true,
+      headers: header,
+      proposedIndices: proposedIndices,
+      save: (indicies, complete) => {
+        const collectionEntry = this.addCollection(collectionName, indicies, header, data);
+        parseResult = null;
+        complete(collectionName);
+        this.saveInLocalStorage(collectionName, collectionEntry);
+      }
     });
   }
 
@@ -94,29 +191,6 @@ export class DataService {
     return header;
   }
 
-  private getColumnTypes(header: string[], data: any[]) {
-    let columnTypes: string[];
-
-    for (const columnName of header) {
-      const thisColumnTypes = { 'string': 0, 'number': 0, 'boolean': 0, 'undefined': 0 };
-      for (let i = 0; i < Math.sqrt(data.length); ++i) {
-        thisColumnTypes[typeof data[i][columnName]] += 1;
-      }
-
-      let maxValue = 0;
-      let maxKey = 'string';
-      for (const [key, value] of Object.entries(thisColumnTypes)) {
-        if (value > maxValue) {
-          maxKey = key;
-          maxValue = value;
-        }
-      }
-
-      columnTypes.push(maxKey);
-    }
-
-    return columnTypes;
-  }
 
   private handleCommaNumbers(data: any[]) {
     const dataLength = data.length;
@@ -133,18 +207,17 @@ export class DataService {
   }
 
   private generateIndex(data: any[], header: string[]) {
-    header.unshift('#');
+    header.unshift(autoId);
 
     let i = 0;
     for (let row of data) {
-      row['#'] = i;
+      row[autoId] = i;
       i += 1;
     }
   }
 
   private parseCommaNumberColumn(data: any[], fieldName: string) {
     const dataLength = data.length;
-
     const splitPoint = Math.floor(Math.sqrt(dataLength));
     const parsedNumbers = new Array(dataLength);
     let successfullyParsedCount = 0;
@@ -177,9 +250,9 @@ export class DataService {
     }
   }
 
-  private repairTypeConsistency(parseResult: ParseResult) {
-
+  private repairTypeConsistency() {
   }
+
 
   // public loadDataFromAssets(assetName: string,
   //   indicesSelector: (headers: string[],
@@ -230,12 +303,12 @@ export class DataService {
   }
 
   public getCollectionNames() {
-    return Object.keys(this.collections);
+    return Object.keys(this.dataCollectionEntries);
   }
 
   public getViewNames(): string[] {
     let viewNames: string[] = [];
-    for (let [_, value] of Object.entries(this.collections)) {
+    for (let [_, value] of Object.entries(this.dataCollectionEntries)) {
       viewNames.push(...value.views.map(v => v.viewName));
     }
 
@@ -243,11 +316,11 @@ export class DataService {
   }
 
   public getCollectionViewNames(collectionName: string) {
-    return this.collections[collectionName].views.map(v => v.viewName);
+    return this.dataCollectionEntries[collectionName].views.map(v => v.viewName);
   }
 
   public getViewNameCollection(viewName: string) {
-    for (let [collectionName, collectionValue] of Object.entries(this.collections)) {
+    for (let [collectionName, collectionValue] of Object.entries(this.dataCollectionEntries)) {
       let foundView = collectionValue.views.find(v => v.viewName == viewName);
       if (foundView) {
         return collectionName;
@@ -265,7 +338,7 @@ export class DataService {
   }
 
   public getViewColumns(viewName: string) {
-    for (let collection of Object.values(this.collections)) {
+    for (let collection of Object.values(this.dataCollectionEntries)) {
       const view = collection.views.find(v => v.viewName == viewName);
       if (view) {
         return view.columnNames;
@@ -282,14 +355,27 @@ export class DataService {
   }
 
   public onCollectionUpdate(collectionName: string, callback: () => void) {
-    this.collections[collectionName].onUpdateCallback.push(callback);
+    this.dataCollectionEntries[collectionName].onUpdateCallback.push(callback);
   }
 
   public addCollection(collectionName: string, indices: string[], columnNames: string[], data: any[]) {
     let collection: Collection = db.addCollection(collectionName, {
       indices: indices
     });
+    data = this.remapCollection(data);
+    collection.insert(data);
 
+    return this.dataCollectionEntries[collectionName] = {
+      onUpdateCallback: [],
+      views: [{
+        viewName: collectionName,
+        columnNames: columnNames
+      }],
+      handles: 1
+    };
+  }
+
+  private remapCollection(data: any[]) {
     if (Array.isArray(data[0])) {
       data = data.map(row => {
         let obj = {};
@@ -300,16 +386,7 @@ export class DataService {
       });
     }
 
-    collection.insert(data);
-
-    this.collections[collectionName] = {
-      onUpdateCallback: [],
-      views: [{
-        viewName: collectionName,
-        columnNames: columnNames
-      }],
-      handles: 1
-    };
+    return data;
   }
 
   public addCollectionView(collectionName: string, viewName: string,
@@ -320,14 +397,14 @@ export class DataService {
     });
     newCollection.insert(data);
 
-    this.collections[collectionName].views.push({
+    this.dataCollectionEntries[collectionName].views.push({
       viewName: viewName,
       columnNames: columnNames
     });
   }
 
   public removeView(viewName: string) {
-    Object.entries(this.collections).forEach(([cName, c]) => {
+    Object.entries(this.dataCollectionEntries).forEach(([cName, c]) => {
       const foundIndex = c.views.findIndex(v => v.viewName == viewName);
       if (foundIndex != -1) {
         db.removeCollection(c.views[foundIndex].viewName);
@@ -338,21 +415,21 @@ export class DataService {
   }
 
   public addCollectionHandle(collectionName: string) {
-    this.collections[collectionName].handles += 1;
+    this.dataCollectionEntries[collectionName].handles += 1;
   }
 
   public removeCollectionHandle(collectionName: string) {
-    this.collections[collectionName].handles -= 1;
+    this.dataCollectionEntries[collectionName].handles -= 1;
 
-    if (this.collections[collectionName].handles <= 0) {
-      this.collections[collectionName].views.forEach(v => db.removeCollection(v.viewName));
+    if (this.dataCollectionEntries[collectionName].handles <= 0) {
+      this.dataCollectionEntries[collectionName].views.forEach(v => db.removeCollection(v.viewName));
       db.removeCollection(collectionName);
-      delete this.collections[collectionName];
+      delete this.dataCollectionEntries[collectionName];
     }
   }
 
   public collectionUpdated(collectionName: string) {
-    this.collections[collectionName].onUpdateCallback.forEach(c => c());
+    this.dataCollectionEntries[collectionName].onUpdateCallback.forEach(c => c());
   }
 
   public updateViewColumnNames(viewName: string) {

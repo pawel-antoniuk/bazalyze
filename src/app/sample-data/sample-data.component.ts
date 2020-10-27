@@ -14,7 +14,7 @@ import { DataLoaderService } from '../data-loader.service';
 })
 export class SampleDataComponent implements OnInit {
 
-  availableDatasets: string[] = ['medical_data.csv', 'mortality_data.csv'];
+  availableDatasets: string[] = ['medical_data.csv', 'mortality_data.csv', 'IRISDAT.TXT', 'INCOME.TXT', 'arrhythmia.txt'];
   otherResources: string[] = ['medical_data_names.json', 'mortality_data_names.json', 'readme.txt']
   selectedDataset: string;
 

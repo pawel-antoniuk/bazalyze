@@ -47,16 +47,17 @@ export class DiscretizeComponent implements OnInit {
 
       if (this.convertToText) {
         let textValues = {};
-        for (let i = 0; i <= (maxValue - minValue) / this.bins; ++i) {
+        for (let i = 0; i <= (maxValue - minValue) / this.bins + 1; ++i) {
           const lowerLimit = i * (maxValue - minValue) / this.bins + minValue;
           const upperLimit = (i + 1) * (maxValue - minValue) / this.bins + minValue;
           textValues[i] = `[${lowerLimit.toFixed(2)}, ${upperLimit.toFixed(2)})`;
         }
 
-        const lastIndex = Math.floor((maxValue - minValue) / this.bins) + 1;
+        const lastIndex = Math.floor((maxValue - minValue) / this.bins) + 2;
         const lowerLimit = lastIndex * (maxValue - minValue) / this.bins + minValue;
         const upperLimit = (lastIndex + 1) * (maxValue - minValue) / this.bins + minValue;
         textValues[lastIndex] = `[${lowerLimit.toFixed(2)}, ${upperLimit.toFixed(2)}]`;
+        textValues[lastIndex + 1] = `[${lowerLimit.toFixed(2)}, ${upperLimit.toFixed(2)}]`;
 
         this.dataService.getView(this.selectedViewName).data.forEach(row => {
           row[targetColumnName] = textValues[this.discretize(row[columnName], minValue, maxValue)];
@@ -79,7 +80,7 @@ export class DiscretizeComponent implements OnInit {
   }
 
   private discretize(currentValue: number, minValue: number, maxValue: number) {
-    return Math.floor((currentValue - minValue) / (maxValue - minValue + 0.00001) * this.bins);
+    return Math.floor((currentValue - minValue) / (maxValue - minValue) * this.bins);
   }
 
 }

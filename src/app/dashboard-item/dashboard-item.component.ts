@@ -16,10 +16,12 @@ export class DashboardItemComponent implements OnInit, AfterViewInit {
 
   public title: string
   public subheader: string;
+  public componentRef: ComponentRef<any>;
+  public saveable = false;
+  public cloneable = false;
 
   private componentType: Type<any>;
   private complete: (component: ComponentRef<any>) => void;
-  private componentRef: ComponentRef<any>;
 
   constructor(private resolver: ComponentFactoryResolver,
     private dashboardService: DashboardService) { }
@@ -31,6 +33,8 @@ export class DashboardItemComponent implements OnInit, AfterViewInit {
     this.container.clear();
     const factory = this.resolver.resolveComponentFactory(this.componentType);
     this.componentRef = this.container.createComponent(factory);
+    this.cloneable = true;
+    this.saveable = typeof this.componentRef.instance.saveComponent === 'function';
 
     this.complete(this.componentRef);
   }
@@ -52,5 +56,9 @@ export class DashboardItemComponent implements OnInit, AfterViewInit {
         this.componentRef.instance.cloneComponent(ref.instance);
       }
     });
+  }
+
+  onSave() {
+    this.componentRef.instance.saveComponent();
   }
 }

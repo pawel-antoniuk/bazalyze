@@ -46,6 +46,7 @@ export class ToolbarComponent implements OnInit {
     const inputNode: any = document.querySelector('#file');
     const file = inputNode.files[0];
     this.dataLoader.loadFile(file);
+    inputNode.value = '';
   }
 
   openToNumerical() {
@@ -82,6 +83,10 @@ export class ToolbarComponent implements OnInit {
 
   openSampleData() {
     this.dialog.open(SampleDataComponent);
+  }
+
+  save() {
+
   }
 
   openFilter() {

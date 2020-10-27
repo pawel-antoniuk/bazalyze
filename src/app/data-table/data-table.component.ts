@@ -63,6 +63,15 @@ export class DataTableComponent implements OnInit, OnDestroy, CloneableDashboard
     this.dataService.addCollectionHandle(this.collectionName);
   }
 
+  saveComponent() {
+    const content = this.dataService.getViewaAsCsv(this.selectedViewName);
+    var a = document.createElement('a');
+    var file = new Blob([content], {type: 'text/csv'});
+    a.href = URL.createObjectURL(file);
+    a.download = `${this.selectedViewName}.csv`;
+    a.click();
+  }
+
   onViewDelete() {
     const availableViewNames = this.dataService.getCollectionViewNames(this.collectionName);
     const currentViewNameIndex = availableViewNames.findIndex(v => v == this.selectedViewName);
@@ -77,6 +86,25 @@ export class DataTableComponent implements OnInit, OnDestroy, CloneableDashboard
     const oldSelectedViewName = this.selectedViewName;
     this.selectedViewName = newViewName;
     this.dataService.removeView(oldSelectedViewName);
+  }
+
+  onCellClick(event, row, col) {
+    const input = document.createElement('input');
+    input.style.width = event.target.getBoundingClientRect().width - 10 + 'px';
+    input.style.height = 20 + 'px';
+    input.style.border = 'none';
+    input.value = row[col];
+    event.target.innerHTML = '';
+    event.target.style.padding = '2px';
+    event.target.append(input);
+    input.focus();
+
+    input.onblur = () => {
+      const newValue = input.value;
+      event.target.innerHTML = newValue;
+      event.target.style.padding = '';
+      row[col] = newValue;
+    }
   }
 
 }

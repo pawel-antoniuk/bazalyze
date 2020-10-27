@@ -3,7 +3,10 @@
     <p class="dashboard-title-header">
       {{title}}
       <span class="fill-remaining-space"></span>
-      <button mat-icon-button (click)="onClone()">
+      <button mat-icon-button (click)="onSave()" *ngIf="saveable">
+        <mat-icon>save</mat-icon>
+      </button>
+      <button mat-icon-button (click)="onClone()" *ngIf="cloneable">
         <mat-icon>file_copy</mat-icon>
       </button>
       <button mat-icon-button (click)="onClose()">

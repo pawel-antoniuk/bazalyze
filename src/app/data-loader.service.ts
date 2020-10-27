@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Papa } from 'ngx-papaparse';
+import { AlertComponent } from './alert/alert.component';
 import { DashboardService } from './dashboard.service';
 import { DataTableComponent } from './data-table/data-table.component';
 import { DataService } from './data.service';
@@ -25,21 +25,32 @@ export class DataLoaderService {
         return;
       }
 
-      this.data.loadDataFromFile(file, importSettings, (headers, proposedIndices, save) => {
+      this.data.loadDataFromFile(file, importSettings, (result) => {
+        if (!result.success) {
+          this.dialog.open(AlertComponent, {
+            data: {
+              title: 'Error',
+              message: 'Dataset has duplicated column names'
+            }
+          });
+          return;
+        }
+
         this.dialog.open(SelectIndexComponent, {
-          data: { headers, proposedIndices }
-        }).afterClosed().subscribe(result => {
-          if (result === null || Array.isArray(result)) {
-            save(result, (collectionName) => {
-              this.dashboardService.addComponent(collectionName, DataTableComponent,
-                (component => {
-                  component.instance.collectionName = collectionName;
-                }));
+          data: {
+            headers: result.headers,
+            proposedIndices: result.proposedIndices
+          }
+        }).afterClosed().subscribe(indices => {
+          if (indices === null || Array.isArray(indices)) {
+            result.save(indices, (collectionName) => {
+              this.dashboardService.addComponent(collectionName, DataTableComponent, component => {
+                component.instance.collectionName = collectionName;
+              });
             });
           }
         });
       });
-
     });
   }
 
@@ -52,21 +63,32 @@ export class DataLoaderService {
       }
 
       this.data.loadDataFromAssets(url, assetName, importSettings,
-        (headers, proposedIndices, save) => {
+        (result) => {
+          if (!result.success) {
+            this.dialog.open(AlertComponent, {
+              data: {
+                title: 'Error',
+                message: 'Dataset has duplicated column names'
+              }
+            });
+            return;
+          }
+
           this.dialog.open(SelectIndexComponent, {
-            data: { headers, proposedIndices }
-          }).afterClosed().subscribe(result => {
-            if (result === null || Array.isArray(result)) {
-              save(result, (collectionName) => {
-                this.dashboardService.addComponent(collectionName, DataTableComponent,
-                  (component => {
-                    component.instance.collectionName = collectionName;
-                  }));
+            data: {
+              headers: result.headers,
+              proposedIndices: result.proposedIndices
+            }
+          }).afterClosed().subscribe(indices => {
+            if (indices === null || Array.isArray(indices)) {
+              result.save(indices, (collectionName) => {
+                this.dashboardService.addComponent(collectionName, DataTableComponent, component => {
+                  component.instance.collectionName = collectionName;
+                });
               });
             }
           });
         });
     });
   }
-
 }

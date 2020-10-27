@@ -1,8 +1,8 @@
-<div class='floating-container'>
+<div class="floating-container">
   <mat-icon class="front-icon">cloud_upload</mat-icon>
   <mat-icon class="front-icon">transform</mat-icon>
   <mat-icon class="front-icon">bar_chart</mat-icon>
-  <h1 class='header'>
+  <h1 class="header">
     Upload
     <mat-icon>arrow_forward_ios</mat-icon>
     Transform
@@ -12,5 +12,25 @@
   <h4>
     A simple but powerful browser-side tool that will help you analyze your data
   </h4>
-  <p>Paweł Antoniuk @ Bialystok University of Technology </p>
+  <p>Paweł Antoniuk @ Bialystok University of Technology</p>
+
+  <div class="dataset-list">
+    <br />
+    <mat-action-list>
+      <h3 matSubheader>Recent datasets</h3>
+      <small *ngIf="getCollectionNames().length == 0" >
+        <button disabled mat-list-item>
+          <small>(empty)</small>
+        </button>
+      </small>
+      <button *ngFor="let collectionName of getCollectionNames()" mat-list-item
+        (click)="loadRecentDataset(collectionName)">
+        {{ collectionName }}
+        <div fxFlex></div>
+        <small>
+          {{ getCollectionDate(collectionName) }}
+        </small>
+      </button>
+    </mat-action-list>
+  </div>
 </div>

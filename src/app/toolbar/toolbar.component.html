@@ -43,7 +43,7 @@
 <mat-menu #fileMenu="matMenu">
   <button mat-menu-item (click)="fileInput.click()">Import from file</button>
   <button mat-menu-item (click)="openSampleData()">Open sample dataset</button>
-  <button mat-menu-item>Export to file</button>
+  <button mat-menu-item (click)="save()">Save as</button>
 </mat-menu>
 
 <!-- <mat-menu #changesMenu="matMenu">
